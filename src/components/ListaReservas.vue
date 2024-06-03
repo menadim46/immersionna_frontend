@@ -30,8 +30,9 @@ export default {
       return usuariosSeleccionar
     },
     reservasFiltradas() {
-      return this.usuarioParaFiltrar
-        ? this.reservasAPI.filter(reserva => reserva.usuario === this.usuarioParaFiltrar || reserva.usuario === "")
+
+
+      return this.usuarioParaFiltrar ? this.reservasAPI.filter(reserva => reserva.usuario === this.usuarioParaFiltrar || reserva.usuario === "")
 
         : this.reservasAPI;
 
@@ -51,15 +52,19 @@ export default {
       });
       return tareasPendientes;
     },
-    
+
 
   },
 
   watch: {
     usuarioRegistrado(nuevoUsuario) {
-      this.usuarioParaFiltrar = nuevoUsuario;
-
+      if (this.comprobarEmpleado(nuevoUsuario, this.contrasenaRegistrada)) {
+        this.usuarioParaFiltrar = nuevoUsuario;
+      } else {
+        this.usuarioParaFiltrar = '';
+      }
     },
+    reservasAPI: 'ordenarReservas',
     reservasAPI: 'ordenarReservas'
   },
 
@@ -107,8 +112,16 @@ export default {
       this.usuarioRegistrado = ''
       this.contrasenaRegistrada = ''
     },
-    comprobarEmpleado(usuarioFormulario) {
-      return this.usuarios.some(u => u.usuario === usuarioFormulario);
+    registrarse() {
+      if (this.comprobarEmpleado(this.usuarioRegistrado, this.contrasenaRegistrada)) {
+        this.usuarioParaFiltrar = this.usuarioRegistrado;
+      } else {
+        this.usuarioParaFiltrar = '';
+        alert('Usuario o contraseña incorrectos.');
+      }
+    },
+    comprobarEmpleado(usuarioIntroducido, contrasenaIntroducida) {
+      return this.usuarios.some(u => u.usuario === usuarioIntroducido && usuarioIntroducido === contrasenaIntroducida);
     }
 
 
@@ -123,7 +136,7 @@ export default {
 
 
 <template>
-  <div class="container col-3">
+  <div class="container col-4">
     <h4 class="mt-5"><strong>Registrese para asignarse una tarea</strong></h4>
     <div class="input-group mt-3">
       <font-awesome-icon :icon="['fas', 'user']" size="2xl" />
@@ -131,7 +144,9 @@ export default {
         aria-label="usuarioRegistrado">
       <input v-model="contrasenaRegistrada" type="password" class="form-control ms-5" placeholder="Contraseña"
         aria-label="contrasenaRegistrada">
+      <button v-if="!usuarioParaFiltrar" type="button" class="btn btn-success ms-5" @click="registrarse">Registrarse</button>
       <button v-if="usuarioParaFiltrar" type="button" class="btn btn-success ms-5" @click="salir">Cerrar Sesión</button>
+
     </div>
     <div>
     </div>
@@ -147,7 +162,7 @@ export default {
           <!-- DOS OPCIONES: mostrar reservas del usuario y no asignados o todas y que solo se asigne el registrado, -->
           <!-- <div class="card"
             v-if="usuarioParaFiltrar && usuarioRegistrado == contrasenaRegistrada && comprobarEmpleado(usuarioParaFiltrar)"> -->
-            <div class="card">
+          <div class="card">
             <DataTable :value="this.reservasOrdenadasPorTareasPendientes" paginator :rows="50" stripedRows
               tableStyle="min-width: 60vw">
               <Column field="id" header="Id" style="min-width: 3vw" class="fs-5">
@@ -203,24 +218,24 @@ export default {
                 <template #body="{ data }">
                   <div v-if="!data.usuario &&
                     data.tareaAsignada !== 'Se han realizado todas las tareas'">
-                    <div class="card flex justify-content-center">
+                    <div v-if="usuarioParaFiltrar" class="card flex justify-content-center">
                       <Dropdown v-model="data.usernameTemporal" :options="usuariosAsignables" checkmark
-                          :highlightOnSelect="false" optionLabel="usuario" placeholder="Elige usuario"
-                          class="w-full md:w-14rem" >
-                        </Dropdown>
+                        :highlightOnSelect="false" optionLabel="usuario" placeholder="Elige usuario"
+                        class="w-full md:w-14rem">
+                      </Dropdown>
                     </div>
                   </div>
-                    <div class="mt-1 mt-2 mb-3" id="usuario-asignado" v-else>
-                      <strong>{{ data.usuario }} </strong>
-                    </div>
-                  </template>
+                  <div class="mt-1 mt-2 mb-3" id="usuario-asignado" v-else>
+                    <strong>{{ data.usuario }} </strong>
+                  </div>
+                </template>
               </Column>
               <Column field="tareaAsignada" header="" style="min-width: 3vw" class="fs-5">
                 <template #body="{ data }">
                   <div v-if="!data.usuario &&
                     data.tareaAsignada !== 'Se han realizado todas las tareas'">
-                    <span  :class="{ 'tarea-completada': data.tareaAsignada === 'Se han realizado todas las tareas' }">
-                      <i  class="pi pi-check-circle" style="font-size: 2rem" @click="asignarUsuario(data)"></i>
+                    <span v-if="usuarioParaFiltrar" :class="{ 'tarea-completada': data.tareaAsignada === 'Se han realizado todas las tareas' }">
+                      <i class="pi pi-check-circle" style="font-size: 2rem" @click="asignarUsuario(data)"></i>
                     </span>
                   </div>
                 </template>
@@ -231,8 +246,8 @@ export default {
 
                   <div v-if="data.usuario &&
                     data.tareaAsignada &&
-                    data.tareaAsignada != 'Se han realizado todas las tareas'" class="ms-3 btn btn-success">
-                    <i class="pi pi-play-circle" @click=completarTarea(data) style="font-size: 2rem"></i>
+                    data.tareaAsignada != 'Se han realizado todas las tareas' && usuarioParaFiltrar" class="ms-3 btn btn-success">
+                    <i  class="pi pi-play-circle" @click=completarTarea(data) style="font-size: 2rem"></i>
 
                   </div>
                 </template>
