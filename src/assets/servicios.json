@@ -1,0 +1,264 @@
+{
+    "_embedded": {
+        "serviciosIntercambio": [
+            {
+                "descripcion": "Viaje651",
+                "fechaInicio": "2024-06-01",
+                "nivelEstudios": "Universitario",
+                "reservas": [
+                    {
+                        "nombreApellidosCliente": "Maurine Roberts",
+                        "fechaReserva": "2024-01-01",
+                        "tareaAsignada": "Registrar cliente",
+                        "username": "",
+                        "_links": {
+                            "self": {
+                                "href": "http://localhost:8080/api/reservas/14"
+                            },
+                            "reserva": {
+                                "href": "http://localhost:8080/api/reservas/14"
+                            },
+                            "servicio": {
+                                "href": "http://localhost:8080/api/reservas/14/servicio"
+                            }
+                        }
+                    },
+                    {
+                        "nombreApellidosCliente": "Esmeralda Schimmel",
+                        "fechaReserva": "2024-01-02",
+                        "tareaAsignada": "Confirmar Alojamiento",
+                        "username": "",
+                        "_links": {
+                            "self": {
+                                "href": "http://localhost:8080/api/reservas/1"
+                            },
+                            "reserva": {
+                                "href": "http://localhost:8080/api/reservas/1"
+                            },
+                            "servicio": {
+                                "href": "http://localhost:8080/api/reservas/1/servicio"
+                            }
+                        }
+                    },
+                    {
+                        "nombreApellidosCliente": "Jefferey Lindgren",
+                        "fechaReserva": "2024-01-03",
+                        "tareaAsignada": "Confirmar Transporte",
+                        "username": "",
+                        "_links": {
+                            "self": {
+                                "href": "http://localhost:8080/api/reservas/2"
+                            },
+                            "reserva": {
+                                "href": "http://localhost:8080/api/reservas/2"
+                            },
+                            "servicio": {
+                                "href": "http://localhost:8080/api/reservas/2/servicio"
+                            }
+                        }
+                    },
+                    {
+                        "nombreApellidosCliente": "Nigel Casper",
+                        "fechaReserva": "2024-01-04",
+                        "tareaAsignada": "",
+                        "username": "",
+                        "_links": {
+                            "self": {
+                                "href": "http://localhost:8080/api/reservas/3"
+                            },
+                            "reserva": {
+                                "href": "http://localhost:8080/api/reservas/3"
+                            },
+                            "servicio": {
+                                "href": "http://localhost:8080/api/reservas/3/servicio"
+                            }
+                        }
+                    }
+                ],
+                "_links": {
+                    "self": {
+                        "href": "http://localhost:8080/api/serciciosIntercambio/333"
+                    },
+                    "servicioIntercambio": {
+                        "href": "http://localhost:8080/api/serciciosIntercambio/333"
+                    },
+                    "reservas": {
+                        "href": "http://localhost:8080/api/serciciosIntercambio/333/reservas"
+                    }
+                }
+            },
+            {
+                "descripcion": "Viaje759",
+                "fechaInicio": "2024-10-01",
+                "nivelEstudios": "Bachiller",
+                "reservas": [
+                    {
+                        "nombreApellidosCliente":  "Priscilla Erdman",
+                        "fechaReserva": "2024-01-05",
+                        "tareaAsignada": "Registrar cliente",
+                        "username": "",
+                        "_links": {
+                            "self": {
+                                "href": "http://localhost:8080/api/reservas/5"
+                            },
+                            "reserva": {
+                                "href": "http://localhost:8080/api/reservas/5"
+                            },
+                            "servicio": {
+                                "href": "http://localhost:8080/api/reservas/5/servicio"
+                            }
+                        }
+                    },
+                    {
+                        "nombreApellidosCliente":  "Watson Roberts",
+                        "fechaReserva": "2024-01-05",
+                        "tareaAsignada": "Confirmar Alojamiento",
+                        "username": "",
+                        "_links": {
+                            "self": {
+                                "href": "http://localhost:8080/api/reservas/6"
+                            },
+                            "reserva": {
+                                "href": "http://localhost:8080/api/reservas/6"
+                            },
+                            "servicio": {
+                                "href": "http://localhost:8080/api/reservas/6/servicio"
+                            }
+                        }
+                    },
+                    {
+                        "nombreApellidosCliente":  "Rose Kreiger",
+                        "fechaReserva": "2024-01-05",
+                        "tareaAsignada": "Confirmar Transporte",
+                        "username": "",
+                        "_links": {
+                            "self": {
+                                "href": "http://localhost:8080/api/reservas/7"
+                            },
+                            "reserva": {
+                                "href": "http://localhost:8080/api/reservas/7"
+                            },
+                            "servicio": {
+                                "href": "http://localhost:8080/api/reservas/7/servicio"
+                            }
+                        }
+                    },
+                    {
+                        "nombreApellidosCliente": "Steve Ward",
+                        "fechaReserva": "2024-01-06",
+                        "tareaAsignada": "",
+                        "username": "",
+                        "_links": {
+                            "self": {
+                                "href": "http://localhost:8080/api/reservas/8"
+                            },
+                            "reserva": {
+                                "href": "http://localhost:8080/api/reservas/8"
+                            },
+                            "servicio": {
+                                "href": "http://localhost:8080/api/reservas/8/servicio"
+                            }
+                        }
+                    }
+                ],
+                "_links": {
+                    "self": {
+                        "href": "http://localhost:8080/api/serciciosIntercambio/222"
+                    },
+                    "servicioIntercambio": {
+                        "href": "http://localhost:8080/api/serciciosIntercambio/222"
+                    },
+                    "reservas": {
+                        "href": "http://localhost:8080/api/serciciosIntercambio/222/reservas"
+                    }
+                }
+            },
+            {
+                "descripcion": "Viaje626",
+                "fechaInicio": "2024-12-01",
+                "nivelEstudios": "Bachiller",
+                "reservas": [
+                    {
+                        "nombreApellidosCliente": "Skye Terry",
+                        "fechaReserva": "2024-01-07",
+                        "tareaAsignada": "Confirmar Transporte",
+                        "username": "",
+                        "_links": {
+                            "self": {
+                                "href": "http://localhost:8080/api/reservas/9"
+                            },
+                            "reserva": {
+                                "href": "http://localhost:8080/api/reservas/9"
+                            },
+                            "servicio": {
+                                "href": "http://localhost:8080/api/reservas/9/servicio"
+                            }
+                        }
+                    },
+                    {
+                        "nombreApellidosCliente": "Mariam Reilly",
+                        "fechaReserva": "2024-01-08",
+                        "tareaAsignada": "Confirmar Transporte",
+                        "username": "",
+                        "_links": {
+                            "self": {
+                                "href": "http://localhost:8080/api/reservas/10"
+                            },
+                            "reserva": {
+                                "href": "http://localhost:8080/api/reservas/10"
+                            },
+                            "servicio": {
+                                "href": "http://localhost:8080/api/reservas/10/servicio"
+                            }
+                        }
+                    },
+                    {
+                        "nombreApellidosCliente": "Elias Yost",
+                        "fechaReserva": "2024-01-09",
+                        "tareaAsignada": "Confirmar Alojamiento",
+                        "username": "",
+                        "_links": {
+                            "self": {
+                                "href": "http://localhost:8080/api/reservas/11"
+                            },
+                            "reserva": {
+                                "href": "http://localhost:8080/api/reservas/11"
+                            },
+                            "servicio": {
+                                "href": "http://localhost:8080/api/reservas/11/servicio"
+                            }
+                        }
+                    },
+                    {
+                        "nombreApellidosCliente": "Roberto Pfannerstill",
+                        "fechaReserva":"2024-01-10",
+                        "tareaAsignada": "Confirmar Alojamiento",
+                        "username": "",
+                        "_links": {
+                            "self": {
+                                "href": "http://localhost:8080/api/reservas/12"
+                            },
+                            "reserva": {
+                                "href": "http://localhost:8080/api/reservas/12"
+                            },
+                            "servicio": {
+                                "href": "http://localhost:8080/api/reservas/12/servicio"
+                            }
+                        }
+                    }
+                ],
+                "_links": {
+                    "self": {
+                        "href": "http://localhost:8080/api/serciciosIntercambio/13"
+                    },
+                    "servicioIntercambio": {
+                        "href": "http://localhost:8080/api/serciciosIntercambio/13"
+                    },
+                    "reservas": {
+                        "href": "http://localhost:8080/api/serciciosIntercambio/13/reservas"
+                    }
+                }
+            }
+        ]
+    }
+}
