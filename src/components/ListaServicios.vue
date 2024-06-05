@@ -9,24 +9,21 @@ import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import Dropdown from 'primevue/dropdown'
 import Button from 'primevue/button'
-import { ref } from 'vue';
-
-// import Avatar from 'primevue/avatar'
-// import InputText from 'primevue/inputtext'
+import { ref } from 'vue'
 
 export default {
 
   data() {
     return {
       fechaInicio: null,
-       tipoServicio: '',
+      tipoServicio: '',
       descripcion: '',
       nivelEstudios: '',
       tipoAlojamiento: '',
-      idioma:'',
-      fechaInicio:'',
-      fechaFin:'',
-      numeroAlumnos:''
+      idioma: '',
+      fechaInicio: '',
+      fechaFin: '',
+      numeroAlumnos: ''
     }
   },
 
@@ -36,40 +33,42 @@ export default {
   computed: {
     // ...mapState(useServiciosStore, ["usuarios", "tareas"]),
     ...mapState(useServiciosAPIStore, ["servicios", "tipos"]),
-    serviciosOrdenadosFecha() {
+    
+    serviciosOrdenadosFechaInicio() {
+    
       return this.servicios.slice().sort((a, b) => {
-        return new Date(a.fechaInicio) - new Date(b.fechaInicio);
+        return new Date(a.fechaInicio) - new Date(b.fechaInicio)
       });
 
     },
 
-    hoy(){
-return new Date()
+    hoy() {
+      return new Date()
     },
 
     serviciosAnteriores() {
       const hoy = new Date()
-      const serviciosAnteriores = this.servicios.filter(servicio => new Date(servicio.fechaFin) < hoy);
-       return serviciosAnteriores.sort((a, b) => new Date(a.fechaFin) - new Date(b.fechaFin));
+      const serviciosAnteriores = this.servicios.filter(servicio => new Date(servicio.fechaFin) < hoy)
+      return serviciosAnteriores.sort((a, b) => new Date(a.fechaFin) - new Date(b.fechaFin))
 
     },
 
     serviciosConAlojamiento() {
       const hoy = new Date()
-      return this.serviciosOrdenadosFecha.filter(servicio => servicio.tipoAlojamiento && new Date(servicio.fechaFin) > hoy);
+      return this.serviciosOrdenadosFechaInicio.filter(servicio => servicio.tipoAlojamiento && new Date(servicio.fechaFin) > hoy)
     },
     serviciosConNivelEstudios() {
       const hoy = new Date()
-      return this.serviciosOrdenadosFecha.filter(servicio => servicio.nivelEstudios  && new Date(servicio.fechaFin) > hoy);
+      return this.serviciosOrdenadosFechaInicio.filter(servicio => servicio.nivelEstudios && new Date(servicio.fechaFin) > hoy)
     }
-    
-   
+
+
   },
 
   methods: {
-    ...mapActions(useServiciosAPIStore, ['cargarServicios', 'cargarReservasTodosServicios', 
-    'cargarReservasUnServicio', 'crearNuevoServicioStore', 
-    'anadirServicioStore', 'deleteServicioStore']),
+    ...mapActions(useServiciosAPIStore, ['cargarServicios', 'cargarReservasTodosServicios',
+      'cargarReservasUnServicio', 'crearNuevoServicioStore',
+      'anadirServicioStore', 'deleteServicioStore']),
 
 
     obtenerId(url) {
@@ -84,19 +83,19 @@ return new Date()
       this.fechaInicio = ''
     },
     borrarServicio(servicioBorrar) {
-      const index = this.servicios.findIndex(servicio => servicio === servicioBorrar);
+      const index = this.servicios.findIndex(servicio => servicio === servicioBorrar)
       if (index !== -1) {
-        this.servicios.splice(index, 1);
+        this.servicios.splice(index, 1)
       } else {
-        console.error('No se encontró el servicio a borrar en la lista.');
+        console.error('No se encontró el servicio a borrar en la lista.')
       }
-      this.deleteServicioStore(servicioBorrar);
+      this.deleteServicioStore(servicioBorrar)
     },
 
     async guardarServicio() {
       if (!this.tipoServicio || !this.descripcion || !this.fechaInicio) {
-        alert('Por favor, completa todos los campos obligatorios.');
-        return;
+        alert('Por favor, completa todos los campos obligatorios.')
+        return
       }
 
       const nuevoServicio = {
@@ -104,19 +103,18 @@ return new Date()
         descripcion: this.descripcion,
         fechaInicio: this.fechaInicio,
         fechaFin: this.fechaFin,
-        disponibilidad:true,
+        disponibilidad: true,
         idioma: this.idioma,
-        numeroAlumnos:this.numeroAlumnos,
+        numeroAlumnos: this.numeroAlumnos,
         nivelEstudios: this.nivelEstudios,
         tipoAlojamiento: this.tipoAlojamiento,
-      };
+      }
 
       try {
-        await this.anadirServicioStore(nuevoServicio);
+        await this.anadirServicioStore(nuevoServicio)
         this.resetearCampos();
-        this.cargarServicios();
       } catch (error) {
-        console.error('Error al añadir el servicio:', error);
+        console.error('Error al añadir el servicio:', error)
       }
     }
     ,
@@ -129,24 +127,17 @@ return new Date()
       this.fechaFin = ''
       this.idioma = ''
       this.numeroAlumnos = ''
-
-
     },
-
-
     cancelarServicio() {
       this.resetearCampos()
     },
-    calcularDisponibilidad(servicio){
+    calcularDisponibilidad(servicio) {
       return servicio.numeroAlumnos - servicio.reservas.length
     }
-
   },
   mounted() {
     this.cargarServicios()
     this.cargarReservasTodosServicios()
-
-
   }
 }
 </script>
@@ -173,7 +164,7 @@ return new Date()
               </Column>
               <Column field="descripcion" header="Descripción" style="min-width: 3vw" class="fs-5">
                 <template #body="{ data }">
-                  {{ data.descripcion }} 
+                  {{ data.descripcion }}
                 </template>
               </Column>
               <Column field="descripcion" header="Idioma" style="min-width: 3vw" class="fs-5">
@@ -199,14 +190,14 @@ return new Date()
               <Column field="plazas" header="Plazas" style="min-width: 3vw" class="fs-5">
                 <template #body="{ data }">
                   <div style="color: #003366;" v-if="(data.numeroAlumnos - data.reservas.length) > 0">
-                    <strong>{{calcularDisponibilidad(data)}}</strong>
+                    <strong>{{ calcularDisponibilidad(data) }}</strong>
                   </div>
                   <div v-else>
-                    <i class="pi pi-lock"  style="font-size: 1.5em"></i>
+                    <i class="pi pi-lock" style="font-size: 1.5em"></i>
                   </div>
                 </template>
               </Column>
-              <Column field="acciones"style="min-width: 3vw" class="fs-5">
+              <Column field="acciones" style="min-width: 3vw" class="fs-5">
                 <template #body="{ data }">
                   <!-- <i class="pi pi-eye me-5"  style="color: #003366;font-size: 1.5em"></i>
                   <i class="pi pi-file-edit me-5" style="color: #996600;font-size: 1.5em"></i> -->
@@ -254,14 +245,14 @@ return new Date()
                 <template #body="{ data }">
                   {{ data.nivelEstudios }}
                 </template>
-              </Column> 
+              </Column>
               <Column field="plazas" header="Plazas" style="min-width: 3vw" class="fs-5">
                 <template #body="{ data }">
                   <div style="color: #003366;" v-if="(data.numeroAlumnos - data.reservas.length) > 0">
-                    <strong>{{calcularDisponibilidad(data)}}</strong>
+                    <strong>{{ calcularDisponibilidad(data) }}</strong>
                   </div>
                   <div v-else>
-                    <i class="pi pi-lock"  style="font-size: 1.5em"></i>
+                    <i class="pi pi-lock" style="font-size: 1.5em"></i>
                   </div>
                 </template>
               </Column>
@@ -324,8 +315,6 @@ return new Date()
                   {{ data.numeroAlumnos }}
                 </template>
               </Column>
-              
-             
             </DataTable>
           </div>
         </div>
@@ -333,11 +322,7 @@ return new Date()
     </div>
   </div>
 
-
-  
-
   <div class="container">
-   
     <!-- MODDAL EDICION SERVICIO -->
     <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
       <div class="modal-dialog">
@@ -357,7 +342,6 @@ return new Date()
                     <option value="Inmersion">Inmersión</option>
                   </select>
                 </div>
-
                 <div class="form-group">
                   <label for="descripcion">Descripción</label>
                   <input type="text" v-model="descripcion" class="form-control" id="descripcion"
@@ -371,8 +355,6 @@ return new Date()
                     <option value="italiano">Italiano</option>
                     <option value="alemán">Aleman</option>
                   </select>
-                  <!-- <input type="text" v-model="idioma" class="form-control" id="descripcion"
-                    placeholder="Ingrese un idioma"> -->
                 </div>
                 <div class="form-group">
                   <label for="numeroAlumnos">Numero Alumnos</label>

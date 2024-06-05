@@ -57,7 +57,8 @@
 }
 
 #logoImersiona {
-  height: 3em;
+  height: 4em;
+  width: 4em;
 }
 
 .nav-item.active {

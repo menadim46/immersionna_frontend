@@ -53,6 +53,11 @@ export function deleteServicio(data) {
 export function getReservas() {
   return llamadaAPI("get", null, API_RESERVAS)
 }
+
+export function consultaReserva(url) {
+  return llamadaAPI("get", null, url)
+}
+
 export function getServicioDeReserva(url) {
   return llamadaAPI("get", null, url)
 }

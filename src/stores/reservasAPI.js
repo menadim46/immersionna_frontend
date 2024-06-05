@@ -1,15 +1,15 @@
 import { defineStore } from "pinia"
 
-import { getReservas, getServicioDeReserva, putReserva, patchReserva, getCliente, cambiarHttpPorHttps } from "@/stores/api-service.js"
+import { getReservas, getServicioDeReserva, putReserva, patchReserva, getCliente, consultaReserva } from "@/stores/api-service.js"
 
 export const useReservasAPIStore = defineStore("reservasAPI", {
   state: () => ({
     reservasAPI: [],
     reservasCargadasAPI: false,
     usuarios: [{ usuario: "" }, { usuario: "Pepe" }, { usuario: "Juan" }, { usuario: "Maria" }, { usuario: "Julia" }],
-    tareas: ["Registrar cliente", "Confirmar Pago", "Confirmar Alojamiento", "Confirmar Transporte", 
-    "Confirmar llegada al pais por anfitrión","Confirmar salida del país por anfitrión",
-    "Llegada a España","Se han realizado todas las tareas"],
+    tareas: ["Registrar cliente", "Confirmar Pago", "Confirmar Alojamiento", "Confirmar Transporte",
+      "Confirmar llegada al pais por anfitrión", "Confirmar salida del país por anfitrión",
+      "Llegada a España", "Se han realizado todas las tareas"],
     usuarioSeleccionado: "",
     fechaInicio: "",
 
@@ -25,12 +25,12 @@ export const useReservasAPIStore = defineStore("reservasAPI", {
         const response = await getReservas();
         if (response.data._embedded && response.data._embedded.reservas) {
           const promises = response.data._embedded.reservas.map(async (reserva) => {
-            const fechaInicio = await this.obtenerFecha(reserva._links.servicio.href)
-            const nombreApellidosCliente = reserva._links.cliente.href 
+            const datosServicio = await this.obtenerFecha(reserva._links.servicio.href)
+            const nombreApellidosCliente = reserva._links.cliente.href
             const respuestaCliente = await getCliente(reserva._links.cliente.href)
             return {
               ...reserva,
-              fechaInicioServicio: fechaInicio,
+              servicio: datosServicio,
               nombreApellidosCliente: respuestaCliente.data.nombreApellidos,
             };
           });
@@ -45,13 +45,9 @@ export const useReservasAPIStore = defineStore("reservasAPI", {
     },
 
     async obtenerFecha(url) {
-
       try {
         const response = await getServicioDeReserva(url);
-        return response.data.fechaInicio
-
-
-
+        return response.data
       } catch (error) {
         return;
       }
@@ -76,7 +72,14 @@ export const useReservasAPIStore = defineStore("reservasAPI", {
       }
 
     },
-
+    async consultaReservaStore(reserva) {
+      try {
+        const respuesta = await consultaReserva(reserva)
+        return respuesta.data
+      } catch (error) {
+        console.log("Error al consultar la reserva ", reserva, error)
+      }
+    },
 
     async actualizarReserva(reserva) {
       const index = this.reservas.findIndex(r => r._links.self.href === reserva.url)

@@ -17,60 +17,37 @@ export const useServiciosAPIStore = defineStore("serviciosAPI", {
 
   actions: {
     async cargarServicios() {
-      this.servicios = [];
-      this.serviciosCargados = false;
-
+      this.servicios = []
+      this.serviciosCargados = false
       try {
-        const response = await getServicios();
+        const response = await getServicios()
         if (response.data._embedded) {
-
           if (response.data._embedded.serviciosInmersion) {
             const serviciosInmersion = response.data._embedded.serviciosInmersion.map(servicioInmersion => ({
               ...servicioInmersion,
               reservas: [],
-                         
             }
-                 
-            
-            
-          )
-        
-        
-        );
-
-            this.servicios = this.servicios.concat(serviciosInmersion);
+            )
+            )
+            this.servicios = this.servicios.concat(serviciosInmersion)
           }
-
           if (response.data._embedded.serviciosIntercambio) {
             const serviciosIntercambio = response.data._embedded.serviciosIntercambio.map(servicioIntercambio => ({
               ...servicioIntercambio,
               reservas: [],
-      
-              
             }
-            
-            
-          )
-          
-          
-        
-        
-        );
-
-            this.servicios = this.servicios.concat(serviciosIntercambio);
+            )
+            )
+            this.servicios = this.servicios.concat(serviciosIntercambio)
           }
-
         }
-        await this.cargarReservasTodosServicios();
-        this.serviciosCargados = true;
+        await this.cargarReservasTodosServicios()
+        this.serviciosCargados = true
       } catch (error) {
-        console.error("Error al cargar servicios:", error);
-        this.serviciosCargados = false;
+        console.error("Error al cargar servicios:", error)
+        this.serviciosCargados = false
       }
-    }
-
-    ,
-
+    },
     async cargarReservasTodosServicios() {
       const promises = this.servicios.map(async servicio => {
         servicio.reservas = await this.cargarReservasUnServicio(servicio)
@@ -103,7 +80,7 @@ export const useServiciosAPIStore = defineStore("serviciosAPI", {
     async anadirServicioStore(nuevoServicio) {
 
       if (nuevoServicio.tipo === 'Intercambio') {
-        nuevoServicio.nivelEstudios = nuevoServicio.nivelEstudios;
+        nuevoServicio.nivelEstudios = nuevoServicio.nivelEstudios
       } else if (nuevoServicio.tipo === 'Inmersion') {
         nuevoServicio.tipoAlojamiento = nuevoServicio.tipoAlojamiento
       }
@@ -111,18 +88,18 @@ export const useServiciosAPIStore = defineStore("serviciosAPI", {
       try {
         let responseServicios = null
         if (nuevoServicio.tipo === 'Intercambio') {
-          responseServicios = await postServicioIntercambio(nuevoServicio);
+          responseServicios = await postServicioIntercambio(nuevoServicio)
 
         } else {
-          responseServicios = await postServicioInmersion(nuevoServicio);
+          responseServicios = await postServicioInmersion(nuevoServicio)
         }
 
         if (responseServicios.status === 200) {
-          const servicioAgregado = { ...nuevoServicio, _links: responseServicios.data._links };
-          this.servicios.unshift(servicioAgregado);
+          const servicioAgregado = { ...nuevoServicio, _links: responseServicios.data._links }
+          this.servicios.unshift(servicioAgregado)
         }
       } catch (error) {
-        console.error("Error: ", error);
+        console.error("Error: ", error)
       }
     },
     async deleteServicioStore(servicioID) {
