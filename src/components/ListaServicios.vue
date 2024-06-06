@@ -10,6 +10,7 @@ import Column from 'primevue/column'
 import Dropdown from 'primevue/dropdown'
 import Button from 'primevue/button'
 import { ref } from 'vue'
+import Message from 'primevue/message'
 
 export default {
 
@@ -23,19 +24,21 @@ export default {
       idioma: '',
       fechaInicio: '',
       fechaFin: '',
-      numeroAlumnos: ''
+      numeroAlumnos: '1',
+      servicioEditar:'',
+      editandoServicio:true
     }
   },
 
 
-  components: { Servicio, DataTable, Column, Dropdown, Button },
+  components: { Servicio, DataTable, Column, Dropdown, Button, Message },
 
   computed: {
     // ...mapState(useServiciosStore, ["usuarios", "tareas"]),
     ...mapState(useServiciosAPIStore, ["servicios", "tipos"]),
-    
+
     serviciosOrdenadosFechaInicio() {
-    
+
       return this.servicios.slice().sort((a, b) => {
         return new Date(a.fechaInicio) - new Date(b.fechaInicio)
       });
@@ -68,7 +71,7 @@ export default {
   methods: {
     ...mapActions(useServiciosAPIStore, ['cargarServicios', 'cargarReservasTodosServicios',
       'cargarReservasUnServicio', 'crearNuevoServicioStore',
-      'anadirServicioStore', 'deleteServicioStore']),
+      'anadirServicioStore', 'deleteServicioStore','actualizarServicioStore']),
 
 
     obtenerId(url) {
@@ -81,6 +84,9 @@ export default {
       this.tipoAlojamiento = ''
       this.descripcion = ''
       this.fechaInicio = ''
+      this.fechaFin = ''
+      this.numeroAlumnos = ''
+
     },
     borrarServicio(servicioBorrar) {
       const index = this.servicios.findIndex(servicio => servicio === servicioBorrar)
@@ -116,6 +122,7 @@ export default {
       } catch (error) {
         console.error('Error al añadir el servicio:', error)
       }
+      this.cargarServicios()
     }
     ,
     resetearCampos() {
@@ -126,13 +133,51 @@ export default {
       this.fechaInicio = ''
       this.fechaFin = ''
       this.idioma = ''
-      this.numeroAlumnos = ''
+      this.numeroAlumnos = '1'
     },
     cancelarServicio() {
       this.resetearCampos()
     },
     calcularDisponibilidad(servicio) {
       return servicio.numeroAlumnos - servicio.reservas.length
+    },
+    async actualizarServicio(servicio) {
+
+      // const servicioParaActualizar = {}
+      // servicioParaActualizar.descripcion = servicio.descripcion
+      // servicioParaActualizar.disponibilidad = servicio.disponibilidad
+      // servicioParaActualizar.fechaFin = servicio.fechaFin
+      // servicioParaActualizar.fechaInicio = servicio.fechaInicio
+      // servicioParaActualizar.idioma = servicio.idioma
+      // servicioParaActualizar.numeroAlumnos = servicio.numeroAlumnos
+      // servicioParaActualizar._links.self.href = servicio._links.self.href
+      let modalElement = this.$refs.exampleModal
+      let bsModal = new Modal(modalElement)
+      bsModal.show()
+      //  this.editandoServicio=true
+      //  this.servicioEditar=servicio
+      console.log('abriendo modal')
+      // console.log('voya a pasar esto al store para actualizar' , servicioParaActualizar)
+      // await this.actualizarServicioStore(servicio._links.self.href,servicio)
+    //   // const servicioAcutalizar = {
+    //   //   tipo: servicioEditar.tipoServicio,
+    //   //   descripcion: servicioEditar.descripcion,
+    //   //   fechaInicio: servicioEditar.fechaInicio,
+    //   //   fechaFin: servicioEditar.fechaFin,
+    //   //   disponibilidad: true,
+    //   //   idioma: servicioEditar.idioma,
+    //   //   numeroAlumnos: servicioEditar.numeroAlumnos,
+    //   //   nivelEstudios: servicioEditar.nivelEstudios,
+    //   //   tipoAlojamiento: servicioEditar.tipoAlojamiento,
+    //   // }
+
+    //   try {
+    //     await this.actualizarServicioStore(servicio._links.self.href,servicio)
+    //     this.resetearCampos();
+    //   } catch (error) {
+    //     console.error('Error al añadir el servicio:', error)
+    //   }
+    //   this.cargarServicios()
     }
   },
   mounted() {
@@ -189,8 +234,11 @@ export default {
               </Column>
               <Column field="plazas" header="Plazas" style="min-width: 3vw" class="fs-5">
                 <template #body="{ data }">
-                  <div style="color: #003366;" v-if="(data.numeroAlumnos - data.reservas.length) > 0">
-                    <strong>{{ calcularDisponibilidad(data) }}</strong>
+                  <div v-if="new Date(data.fechaInicio) < new Date().setHours(0, 0, 0, 0)">
+                    <span style="color: green;"><strong>En curso...</strong></span>
+                  </div>
+                  <div v-else-if="calcularDisponibilidad(data) > 0" style="color: #003366;">
+                    <strong>{{ calcularDisponibilidad(data) }} / {{ data.numeroAlumnos }}</strong>
                   </div>
                   <div v-else>
                     <i class="pi pi-lock" style="font-size: 1.5em"></i>
@@ -199,8 +247,8 @@ export default {
               </Column>
               <Column field="acciones" style="min-width: 3vw" class="fs-5">
                 <template #body="{ data }">
-                  <!-- <i class="pi pi-eye me-5"  style="color: #003366;font-size: 1.5em"></i>
-                  <i class="pi pi-file-edit me-5" style="color: #996600;font-size: 1.5em"></i> -->
+                  <!-- <i class="pi pi-eye me-5"  style="color: #003366;font-size: 1.5em"></i>-->
+                  <i class="pi pi-file-edit me-5" style="color: #996600;font-size: 1.5em" @click="actualizarServicio(data)"></i> 
                   <i class="pi pi-trash" @click=borrarServicio(data) style="color: #660000;font-size: 1.5em"></i>
                 </template>
               </Column>
@@ -248,8 +296,11 @@ export default {
               </Column>
               <Column field="plazas" header="Plazas" style="min-width: 3vw" class="fs-5">
                 <template #body="{ data }">
-                  <div style="color: #003366;" v-if="(data.numeroAlumnos - data.reservas.length) > 0">
-                    <strong>{{ calcularDisponibilidad(data) }}</strong>
+                  <div v-if="new Date(data.fechaInicio) < new Date().setHours(0, 0, 0, 0)">
+                    <span style="color: green;"><strong>En curso...</strong></span>
+                  </div>
+                  <div v-else-if="calcularDisponibilidad(data) > 0" style="color: #003366;">
+                    <strong>{{ calcularDisponibilidad(data) }} / {{ data.numeroAlumnos }}</strong>
                   </div>
                   <div v-else>
                     <i class="pi pi-lock" style="font-size: 1.5em"></i>
@@ -258,8 +309,8 @@ export default {
               </Column>
               <Column field="acciones" style="min-width: 3vw" class="fs-5">
                 <template #body="{ data }">
-                  <!-- <i class="pi pi-eye me-5" style="color: #003366;font-size: 1.5em"></i>
-                  <i class="pi pi-file-edit me-5" style="color: #996600;font-size: 1.5em"></i> -->
+                <!-- <i class="pi pi-eye me-5"  style="color: #003366;font-size: 1.5em"></i>-->
+                <i class="pi pi-file-edit me-5" style="color: #996600;font-size: 1.5em" @click="actualizarServicio(data)"></i> 
                   <i class="pi pi-trash" @click=borrarServicio(data) style="color: #660000;font-size: 1.5em"></i>
                 </template>
               </Column>
@@ -310,11 +361,6 @@ export default {
                   {{ data.nivelEstudios }}
                 </template>
               </Column>
-              <Column field="plazas" header="Plazas" style="min-width: 3vw" class="fs-5">
-                <template #body="{ data }">
-                  {{ data.numeroAlumnos }}
-                </template>
-              </Column>
             </DataTable>
           </div>
         </div>
@@ -358,8 +404,8 @@ export default {
                 </div>
                 <div class="form-group">
                   <label for="numeroAlumnos">Numero Alumnos</label>
-                  <input type="text" v-model="numeroAlumnos" class="form-control" id="numeroAlumnos"
-                    placeholder="cantidad alumnos">
+                  <input type="number" v-model="numeroAlumnos" class="form-control" id="numeroAlumnos"
+                    placeholder="cantidad alumnos" min="2" max="30">
                 </div>
                 <div v-if="tipoServicio === 'Intercambio'" class="form-group">
                   <label for="nivelEstudios">Nivel de Estudios</label>
@@ -372,13 +418,13 @@ export default {
                 </div>
                 <div class="col-md-6">
                   <label for="fechaInicio" class="form-label">Fecha-Inicio</label>
-                  <input type="date" class="form-control" id="fechaInicio" v-model="fechaInicio" required>
+                  <input type="date" class="form-control" id="fechaInicio" v-model="fechaInicio" min=hoy required>
                   <div class="valid-feedback">
                     Fecha Valida
                   </div>
                 </div>
                 <div class="col-md-6">
-                  <label for="fechaFin" class="form-label">Fecha-FIn</label>
+                  <label for="fechaFin" class="form-label">Fecha-Fin</label>
                   <input type="date" class="form-control" id="fechaInicio" v-model="fechaFin" required>
                   <div class="valid-feedback">
                     Fecha Valida
@@ -395,10 +441,24 @@ export default {
               </div>
             </form>
           </div>
+          <Message severity="error" v-if="numeroAlumnos && (numeroAlumnos < 1 || numeroAlumnos > 30)">Número inválido
+          </Message>
+          <Message severity="error" v-if="fechaInicio && fechaInicio <= new Date()">Fecha Inicio debe ser posterior a
+            hoy
+          </Message>
+          <Message severity="error" v-if="fechaFin && fechaInicio > fechaFin">Fecha Fin debe ser posterior a Fecha
+            Inicio
+          </Message>
+          <Message severity="error"
+            v-if="(!tipoServicio || !descripcion || !fechaInicio || !fechaFin || !idioma || !numeroAlumnos)">Por favor
+            rellena todos los campos</Message>
           <div class="modal-footer">
             <button type="button" @click="cancelarServicio()" class="btn btn-secondary"
               data-bs-dismiss="modal">Cerrar</button>
-            <button type="button" @click="guardarServicio()" class="btn btn-primary">Guardar Servicio</button>
+              <button v-if="servicioEditar" type="button" data-bs-dismiss="modal" @click="actualizarServicio()" class="btn btn-primary">Actualizar
+                Servicio</button>
+            <button v-if="!servicioEditar" type="button" data-bs-dismiss="modal" @click="guardarServicio()" class="btn btn-primary">Guardar
+              Servicio</button>
           </div>
         </div>
       </div>

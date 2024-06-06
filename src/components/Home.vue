@@ -3,7 +3,7 @@
 </script>
 <template>
     <h1 class="fw-bold mt-3">Bienvenido a Immersionna</h1>
-    <h2 class="fw-bold mt-3 mb-3">Academia de Inmersiones Lingüísticas</h2>
+    <h2 class="fw-bold mt-3 mb-3">Academia de Idiomas </h2>
 <div class="container">
     <img src="/src/assets/imagenBienvenidaImmersionna.jpg"></img>
 </div>

@@ -120,6 +120,6 @@ export const useReservasAPIStore = defineStore("reservasAPI", {
         const reservaPasar = { ...reservaActualizada }
         putReserva(reservaHref, this.reservasAPI[index])
       }
-    }
-  }
-})
+    },
+    
+}})

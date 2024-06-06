@@ -1,5 +1,5 @@
 import { defineStore } from "pinia"
-import { getServicios, getReservasServicio, postServicioInmersion, postServicioIntercambio, deleteServicio } from "@/stores/api-service"
+import { getServicios, getReservasServicio, postServicioInmersion, postServicioIntercambio, deleteServicio, putEntidad } from "@/stores/api-service"
 
 
 export const useServiciosAPIStore = defineStore("serviciosAPI", {
@@ -116,6 +116,21 @@ export const useServiciosAPIStore = defineStore("serviciosAPI", {
         console.error("Error: ", error)
       }
     },
+    async actualizarServicioStore(href, servicioCambiado) {
+      console.log('voy a actualizar',href, 'con', servicioCambiado)
+      // try {
 
+      //   const index = this.servicios.findIndex(servicio => servicio._links.self.href === href)
+      //   if (index !== -1) {
+      //     this.servicios[index].servicio = servicioCambiado
+      //     putServicio(href, servicioCambiado)
+      //   }
+      // } catch (error) {
+      //   console.error("Error al actualizar servicio: ", error)
+      // }
+
+    }
   }
-})
+
+}
+)
