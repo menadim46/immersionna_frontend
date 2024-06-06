@@ -1,16 +1,18 @@
 <script>
 // import servicios from '@/assets/servicios.json'
+// import { useServiciosStore } from '@/stores/servicios'
 import Servicio from '@/components/Servicio.vue'
 import { mapActions, mapState } from 'pinia'
-// import { useServiciosStore } from '@/stores/servicios'
 import { useServiciosAPIStore } from '@/stores/serviciosAPI'
 
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import Dropdown from 'primevue/dropdown'
 import Button from 'primevue/button'
-import { ref } from 'vue'
 import Message from 'primevue/message'
+import { ref } from 'vue'
+
+import { Modal } from 'bootstrap'
 
 export default {
 
@@ -25,13 +27,12 @@ export default {
       fechaInicio: '',
       fechaFin: '',
       numeroAlumnos: '1',
-      servicioEditar:'',
-      editandoServicio:true
+      servicioEditar: '',
     }
   },
 
 
-  components: { Servicio, DataTable, Column, Dropdown, Button, Message },
+  components: { Servicio, DataTable, Column, Dropdown, Button, Message, Modal },
 
   computed: {
     // ...mapState(useServiciosStore, ["usuarios", "tareas"]),
@@ -41,8 +42,7 @@ export default {
 
       return this.servicios.slice().sort((a, b) => {
         return new Date(a.fechaInicio) - new Date(b.fechaInicio)
-      });
-
+      })
     },
 
     hoy() {
@@ -53,7 +53,6 @@ export default {
       const hoy = new Date()
       const serviciosAnteriores = this.servicios.filter(servicio => new Date(servicio.fechaFin) < hoy)
       return serviciosAnteriores.sort((a, b) => new Date(a.fechaFin) - new Date(b.fechaFin))
-
     },
 
     serviciosConAlojamiento() {
@@ -64,14 +63,28 @@ export default {
       const hoy = new Date()
       return this.serviciosOrdenadosFechaInicio.filter(servicio => servicio.nivelEstudios && new Date(servicio.fechaFin) > hoy)
     }
+  },
+  watch: {
+    servicio: {
+      inmedite: true,
+      handler(nuevoValor) {
+        if (nuevoValor) {
+          this.descripcion = nuevoValor.descripcion
+          this.fechaInicio = nuevoValor.fechaInicio
+          this.fechaFin = nuevoValor.fechaFin
+          this.numeroAlumnos = nuevoValor.numeroAlumnos
+          this.tipoAlojamiento = nuevoValor.tipoAlojamiento
+          this.nivelEstudios = nuevoValor.nivelEstudios
 
-
+        }
+      }
+    }
   },
 
   methods: {
     ...mapActions(useServiciosAPIStore, ['cargarServicios', 'cargarReservasTodosServicios',
       'cargarReservasUnServicio', 'crearNuevoServicioStore',
-      'anadirServicioStore', 'deleteServicioStore','actualizarServicioStore']),
+      'anadirServicioStore', 'deleteServicioStore', 'actualizarServicioStore']),
 
 
     obtenerId(url) {
@@ -79,15 +92,6 @@ export default {
       return parts[parts.length - 1]
     },
 
-    handleTipoServicioChange() {
-      this.nivelEstudios = ''
-      this.tipoAlojamiento = ''
-      this.descripcion = ''
-      this.fechaInicio = ''
-      this.fechaFin = ''
-      this.numeroAlumnos = ''
-
-    },
     borrarServicio(servicioBorrar) {
       const index = this.servicios.findIndex(servicio => servicio === servicioBorrar)
       if (index !== -1) {
@@ -100,7 +104,7 @@ export default {
 
     async guardarServicio() {
       if (!this.tipoServicio || !this.descripcion || !this.fechaInicio) {
-        alert('Por favor, completa todos los campos obligatorios.')
+
         return
       }
 
@@ -115,7 +119,6 @@ export default {
         nivelEstudios: this.nivelEstudios,
         tipoAlojamiento: this.tipoAlojamiento,
       }
-
       try {
         await this.anadirServicioStore(nuevoServicio)
         this.resetearCampos();
@@ -141,44 +144,42 @@ export default {
     calcularDisponibilidad(servicio) {
       return servicio.numeroAlumnos - servicio.reservas.length
     },
-    async actualizarServicio(servicio) {
+    mostrarModalEdicion(servicio) {
+      this.servicioEditar = servicio
+      this.tipoServicio = servicio.tipo || ''
+      this.descripcion = servicio.descripcion || ''
+      this.fechaInicio = servicio.fechaInicio || ''
+      this.fechaFin = servicio.fechaFin || ''
+      this.idioma = servicio.idioma || ''
+      this.numeroAlumnos = servicio.numeroAlumnos || '1'
+      this.nivelEstudios = servicio.nivelEstudios || ''
+      this.tipoAlojamiento = servicio.tipoAlojamiento || ''
+    },
 
-      // const servicioParaActualizar = {}
-      // servicioParaActualizar.descripcion = servicio.descripcion
-      // servicioParaActualizar.disponibilidad = servicio.disponibilidad
-      // servicioParaActualizar.fechaFin = servicio.fechaFin
-      // servicioParaActualizar.fechaInicio = servicio.fechaInicio
-      // servicioParaActualizar.idioma = servicio.idioma
-      // servicioParaActualizar.numeroAlumnos = servicio.numeroAlumnos
-      // servicioParaActualizar._links.self.href = servicio._links.self.href
-      let modalElement = this.$refs.exampleModal
-      let bsModal = new Modal(modalElement)
-      bsModal.show()
-      //  this.editandoServicio=true
-      //  this.servicioEditar=servicio
-      console.log('abriendo modal')
-      // console.log('voya a pasar esto al store para actualizar' , servicioParaActualizar)
-      // await this.actualizarServicioStore(servicio._links.self.href,servicio)
-    //   // const servicioAcutalizar = {
-    //   //   tipo: servicioEditar.tipoServicio,
-    //   //   descripcion: servicioEditar.descripcion,
-    //   //   fechaInicio: servicioEditar.fechaInicio,
-    //   //   fechaFin: servicioEditar.fechaFin,
-    //   //   disponibilidad: true,
-    //   //   idioma: servicioEditar.idioma,
-    //   //   numeroAlumnos: servicioEditar.numeroAlumnos,
-    //   //   nivelEstudios: servicioEditar.nivelEstudios,
-    //   //   tipoAlojamiento: servicioEditar.tipoAlojamiento,
-    //   // }
+    async actualizarServicio() {
+      const servicioActualizado = {
+        tipo: this.tipoServicio,
+        descripcion: this.descripcion,
+        fechaInicio: this.fechaInicio,
+        fechaFin: this.fechaFin,
+        disponibilidad: this.servicioEditar.disponibilidad,
+        idioma: this.idioma,
+        numeroAlumnos: this.numeroAlumnos,
+        nivelEstudios: this.nivelEstudios,
+        tipoAlojamiento: this.tipoAlojamiento,
+        _links: this.servicioEditar._links
+      }
 
-    //   try {
-    //     await this.actualizarServicioStore(servicio._links.self.href,servicio)
-    //     this.resetearCampos();
-    //   } catch (error) {
-    //     console.error('Error al añadir el servicio:', error)
-    //   }
-    //   this.cargarServicios()
+      try {
+        await this.actualizarServicioStore(servicioActualizado._links.self.href, servicioActualizado)
+        this.resetearCampos()
+
+      } catch (error) {
+        console.error('Error al actualizar el servicio:', error)
+      }
+      this.cargarServicios()
     }
+    
   },
   mounted() {
     this.cargarServicios()
@@ -188,7 +189,6 @@ export default {
 </script>
 
 <template>
-
   <div class="container mt-3">
     <h1 class="titulo p-2 text-center"><strong>Listado de Servicios</strong></h1>
     <button type="button" class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#exampleModal"
@@ -248,7 +248,8 @@ export default {
               <Column field="acciones" style="min-width: 3vw" class="fs-5">
                 <template #body="{ data }">
                   <!-- <i class="pi pi-eye me-5"  style="color: #003366;font-size: 1.5em"></i>-->
-                  <i class="pi pi-file-edit me-5" style="color: #996600;font-size: 1.5em" @click="actualizarServicio(data)"></i> 
+                  <i data-bs-toggle="modal" data-bs-target="#exampleModal" class="pi pi-file-edit me-5"
+                    style="color: #996600;font-size: 1.5em" @click="mostrarModalEdicion(data)"></i>
                   <i class="pi pi-trash" @click=borrarServicio(data) style="color: #660000;font-size: 1.5em"></i>
                 </template>
               </Column>
@@ -309,8 +310,9 @@ export default {
               </Column>
               <Column field="acciones" style="min-width: 3vw" class="fs-5">
                 <template #body="{ data }">
-                <!-- <i class="pi pi-eye me-5"  style="color: #003366;font-size: 1.5em"></i>-->
-                <i class="pi pi-file-edit me-5" style="color: #996600;font-size: 1.5em" @click="actualizarServicio(data)"></i> 
+                  <!-- <i class="pi pi-eye me-5"  style="color: #003366;font-size: 1.5em"></i>-->
+                  <i data-bs-toggle="modal" data-bs-target="#exampleModal" class="pi pi-file-edit me-5"
+                    style="color: #996600;font-size: 1.5em" @click="mostrarModalEdicion(data)"></i>
                   <i class="pi pi-trash" @click=borrarServicio(data) style="color: #660000;font-size: 1.5em"></i>
                 </template>
               </Column>
@@ -369,8 +371,9 @@ export default {
   </div>
 
   <div class="container">
-    <!-- MODDAL EDICION SERVICIO -->
-    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <!-- MODAL EDICION SERVICIO -->
+    <div class="modal fade" ref="exampleModal" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+      aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
@@ -455,9 +458,11 @@ export default {
           <div class="modal-footer">
             <button type="button" @click="cancelarServicio()" class="btn btn-secondary"
               data-bs-dismiss="modal">Cerrar</button>
-              <button v-if="servicioEditar" type="button" data-bs-dismiss="modal" @click="actualizarServicio()" class="btn btn-primary">Actualizar
-                Servicio</button>
-            <button v-if="!servicioEditar" type="button" data-bs-dismiss="modal" @click="guardarServicio()" class="btn btn-primary">Guardar
+            <button v-if="servicioEditar" type="button" data-bs-dismiss="modal" @click="actualizarServicio()"
+              class="btn btn-primary">Actualizar
+              Servicio</button>
+            <button v-else="!servicioEditar" type="button" data-bs-dismiss="modal" @click="guardarServicio()"
+              class="btn btn-primary">Guardar
               Servicio</button>
           </div>
         </div>

@@ -2,9 +2,9 @@ import axios from "axios";
 // version nueva 21.05
 const host = 'https://immersionna-0ac12e1aa919.herokuapp.com/api/';
 
-const API_SERVICIOS =  host + "servicios"
-const API_RESERVAS =  host + "reservas"
-const API_CLIENTES =  host + "clientes"
+const API_SERVICIOS = host + "servicios"
+const API_RESERVAS = host + "reservas"
+const API_CLIENTES = host + "clientes"
 const API_SERVICIOS_INMERSION = host + "serviciosInmersion"
 const API_SERVICIOS_INTERCAMBIO = host + "serviciosIntercambio"
 
@@ -14,7 +14,7 @@ function llamadaAPI(method = "get", body = null, path) {
     maxBodyLength: Infinity,
     url: path,
     headers: {},
-    timeout: 10000, 
+    timeout: 10000,
   }
   if (body) {
     config.data = body;
@@ -85,8 +85,12 @@ export function putReserva(entidad, data) {
 }
 
 export function putEntidad(entidad, data) {
-  return llamadaAPI("put", data, cambiarHttpPorHttps(entidad))}
+  return llamadaAPI("put", data, cambiarHttpPorHttps(entidad))
+}
+export function patchServicio(entidad, data) {
+  return llamadaAPI("patch", data, entidad)
+}
 
-  export function patchReserva(entidad, data) {
-    return llamadaAPI("patch", data, entidad)
-  }
+export function patchReserva(entidad, data) {
+  return llamadaAPI("patch", data, entidad)
+}

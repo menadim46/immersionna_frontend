@@ -1,5 +1,5 @@
 import { defineStore } from "pinia"
-import { getServicios, getReservasServicio, postServicioInmersion, postServicioIntercambio, deleteServicio, putEntidad } from "@/stores/api-service"
+import { getServicios, getReservasServicio, postServicioInmersion, postServicioIntercambio, deleteServicio, patchServicio } from "@/stores/api-service"
 
 
 export const useServiciosAPIStore = defineStore("serviciosAPI", {
@@ -48,6 +48,7 @@ export const useServiciosAPIStore = defineStore("serviciosAPI", {
         this.serviciosCargados = false
       }
     },
+
     async cargarReservasTodosServicios() {
       const promises = this.servicios.map(async servicio => {
         servicio.reservas = await this.cargarReservasUnServicio(servicio)
@@ -102,6 +103,7 @@ export const useServiciosAPIStore = defineStore("serviciosAPI", {
         console.error("Error: ", error)
       }
     },
+
     async deleteServicioStore(servicioID) {
       console.log("borrando servicio", servicioID._links.self.href)
       try {
@@ -116,21 +118,18 @@ export const useServiciosAPIStore = defineStore("serviciosAPI", {
         console.error("Error: ", error)
       }
     },
+
     async actualizarServicioStore(href, servicioCambiado) {
-      console.log('voy a actualizar',href, 'con', servicioCambiado)
-      // try {
-
-      //   const index = this.servicios.findIndex(servicio => servicio._links.self.href === href)
-      //   if (index !== -1) {
-      //     this.servicios[index].servicio = servicioCambiado
-      //     putServicio(href, servicioCambiado)
-      //   }
-      // } catch (error) {
-      //   console.error("Error al actualizar servicio: ", error)
-      // }
-
+      try {
+        const index = this.servicios.findIndex(servicio => servicio._links.self.href === href)
+        if (index !== -1) {
+          this.servicios[index] = { ...this.servicios[index], ...servicioCambiado }
+          await patchServicio(href, servicioCambiado)
+        }
+      } catch (error) {
+        console.error("Error al actualizar servicio: ", error)
+      }
     }
   }
-
 }
 )
