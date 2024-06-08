@@ -11,8 +11,9 @@ export const useServiciosAPIStore = defineStore("serviciosAPI", {
     tipoAlojamiento: ['Residencia-Media Pension', 'Residencia- Pension Completa', 'Familia de Acogida'],
     idioma: "",
     usuarios: [{ usuario: "" }, { usuario: "Pepe" }, { usuario: "Juan" }, { usuario: "Maria" }, { usuario: "Julia" }],
-    tareas: ["Registrar cliente", "Confirmar Pago", "Confirmar Alojamiento", "Confirmar Transporte", "Se han realizado todas las tareas"]
-
+    tareas: ["Registrar cliente", "Confirmar Pago", "Confirmar Alojamiento", "Confirmar Transporte", "Se han realizado todas las tareas"],
+    servicioConsultar: '',
+    reservasServicioConsultado: []
   }),
 
   actions: {
@@ -105,7 +106,6 @@ export const useServiciosAPIStore = defineStore("serviciosAPI", {
     },
 
     async deleteServicioStore(servicioID) {
-      console.log("borrando servicio", servicioID._links.self.href)
       try {
         const response = await deleteServicio(servicioID._links.self.href)
         if (response.status === 200) {
@@ -129,6 +129,15 @@ export const useServiciosAPIStore = defineStore("serviciosAPI", {
       } catch (error) {
         console.error("Error al actualizar servicio: ", error)
       }
+    },
+
+    async guardarServicioConsultado(servicio) {
+      const servicioAsignarServicioConsultar = { ...servicio }
+      this.servicioConsultar = servicioAsignarServicioConsultar
+      console.log("asignado y en store", this.servicioConsultar)
+      this.reservasServicioConsultado = await this.cargarReservasUnServicio(servicio)
+      return this.reservasServicioConsultado
+
     }
   }
 }

@@ -15,7 +15,7 @@ import { ref } from 'vue'
 import { Modal } from 'bootstrap'
 
 export default {
-
+  emits: ['servicioSeleccionado'],
   data() {
     return {
       fechaInicio: null,
@@ -28,6 +28,8 @@ export default {
       fechaFin: '',
       numeroAlumnos: '1',
       servicioEditar: '',
+      servicioAnadido: false,
+      servicioMirar:''
     }
   },
 
@@ -36,7 +38,7 @@ export default {
 
   computed: {
     // ...mapState(useServiciosStore, ["usuarios", "tareas"]),
-    ...mapState(useServiciosAPIStore, ["servicios", "tipos"]),
+    ...mapState(useServiciosAPIStore, ["servicios", "tipos","servicioConsultar"]),
 
     serviciosOrdenadosFechaInicio() {
 
@@ -84,7 +86,7 @@ export default {
   methods: {
     ...mapActions(useServiciosAPIStore, ['cargarServicios', 'cargarReservasTodosServicios',
       'cargarReservasUnServicio', 'crearNuevoServicioStore',
-      'anadirServicioStore', 'deleteServicioStore', 'actualizarServicioStore']),
+      'anadirServicioStore', 'deleteServicioStore', 'guardarServicioConsultado']),
 
 
     obtenerId(url) {
@@ -92,15 +94,6 @@ export default {
       return parts[parts.length - 1]
     },
 
-    borrarServicio(servicioBorrar) {
-      const index = this.servicios.findIndex(servicio => servicio === servicioBorrar)
-      if (index !== -1) {
-        this.servicios.splice(index, 1)
-      } else {
-        console.error('No se encontró el servicio a borrar en la lista.')
-      }
-      this.deleteServicioStore(servicioBorrar)
-    },
 
     async guardarServicio() {
       if (!this.tipoServicio || !this.descripcion || !this.fechaInicio) {
@@ -122,6 +115,8 @@ export default {
       try {
         await this.anadirServicioStore(nuevoServicio)
         this.resetearCampos();
+        this.servicioAnadido = true
+        this.servicioAnadido = true
       } catch (error) {
         console.error('Error al añadir el servicio:', error)
       }
@@ -178,8 +173,28 @@ export default {
         console.error('Error al actualizar el servicio:', error)
       }
       this.cargarServicios()
+    },
+
+    borrarServicio(servicioBorrar) {
+      const index = this.servicios.findIndex(servicio => servicio === servicioBorrar)
+      if (index !== -1) {
+        this.servicios.splice(index, 1)
+      } else {
+        console.error('No se encontró el servicio a borrar en la lista.')
+      }
+      this.deleteServicioStore(servicioBorrar)
+    },
+   
+    async visualizarReservas(servicio){
+
+      const servicioParaStore= {...servicio}
+      await this.guardarServicioConsultado(servicioParaStore)
+      this.$router.push({ name: 'informes' })
+
     }
-    
+  
+
+
   },
   mounted() {
     this.cargarServicios()
@@ -190,10 +205,18 @@ export default {
 
 <template>
   <div class="container mt-3">
+    <Message severity="success" :sticky="sticky" :life="1000" v-if="servicioAnadido">Se ha añadido el Servicio
+    </Message>
+
+    <Message severity="success" :sticky="sticky" :life="1000" v-if="servicioAnadido">Se ha añadido el Servicio
+    </Message>
+
     <h1 class="titulo p-2 text-center"><strong>Listado de Servicios</strong></h1>
+
+
     <button type="button" class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#exampleModal"
       style="font-size: 1.5em;">
-      <i class="pi pi-plus-circle me-3" style="font-size: 1.2em;"></i> Añadir Servicio
+      <h4><i class="pi pi-plus-circle me-3" style="font-size: 1em;"></i> Añadir Servicio</h4> 
     </button>
     <div class="container text-center">
       <div class="row justify-content-end">
@@ -238,7 +261,7 @@ export default {
                     <span style="color: green;"><strong>En curso...</strong></span>
                   </div>
                   <div v-else-if="calcularDisponibilidad(data) > 0" style="color: #003366;">
-                    <strong>{{ calcularDisponibilidad(data) }} / {{ data.numeroAlumnos }}</strong>
+                    <strong>{{ calcularDisponibilidad(data) }}</strong>
                   </div>
                   <div v-else>
                     <i class="pi pi-lock" style="font-size: 1.5em"></i>
@@ -247,7 +270,7 @@ export default {
               </Column>
               <Column field="acciones" style="min-width: 3vw" class="fs-5">
                 <template #body="{ data }">
-                  <!-- <i class="pi pi-eye me-5"  style="color: #003366;font-size: 1.5em"></i>-->
+                  <i class="pi pi-eye me-5" @click="visualizarReservas(data)" style="color: #003366;font-size: 1.5em"></i>
                   <i data-bs-toggle="modal" data-bs-target="#exampleModal" class="pi pi-file-edit me-5"
                     style="color: #996600;font-size: 1.5em" @click="mostrarModalEdicion(data)"></i>
                   <i class="pi pi-trash" @click=borrarServicio(data) style="color: #660000;font-size: 1.5em"></i>
@@ -301,7 +324,7 @@ export default {
                     <span style="color: green;"><strong>En curso...</strong></span>
                   </div>
                   <div v-else-if="calcularDisponibilidad(data) > 0" style="color: #003366;">
-                    <strong>{{ calcularDisponibilidad(data) }} / {{ data.numeroAlumnos }}</strong>
+                    <strong>{{ calcularDisponibilidad(data) }} </strong>
                   </div>
                   <div v-else>
                     <i class="pi pi-lock" style="font-size: 1.5em"></i>
@@ -310,7 +333,7 @@ export default {
               </Column>
               <Column field="acciones" style="min-width: 3vw" class="fs-5">
                 <template #body="{ data }">
-                  <!-- <i class="pi pi-eye me-5"  style="color: #003366;font-size: 1.5em"></i>-->
+                  <i class="pi pi-eye me-5" @click="visualizarReservas(data)" style="color: #003366;font-size: 1.5em"></i>
                   <i data-bs-toggle="modal" data-bs-target="#exampleModal" class="pi pi-file-edit me-5"
                     style="color: #996600;font-size: 1.5em" @click="mostrarModalEdicion(data)"></i>
                   <i class="pi pi-trash" @click=borrarServicio(data) style="color: #660000;font-size: 1.5em"></i>
@@ -321,7 +344,8 @@ export default {
         </div>
       </div>
     </div>
-    <div class="container text-center mt-5">
+    <div class="container text-center mt-5 mb-5">
+    <div class="container text-center mt-5 mb-5">
       <div class="row justify-content-end">
         <div class="col-12">
           <div class="card">
@@ -369,6 +393,7 @@ export default {
       </div>
     </div>
   </div>
+  </div>
 
   <div class="container">
     <!-- MODAL EDICION SERVICIO -->
@@ -399,10 +424,14 @@ export default {
                 <div class="form-group">
                   <label for="idioma">Idioma</label>
                   <select v-model="idioma" class="form-control" id="nivelEstudios">
-                    <option value="ingles">Inglés</option>
-                    <option value="frances">Francés</option>
-                    <option value="italiano">Italiano</option>
-                    <option value="alemán">Aleman</option>
+                    <option value="Ingles">Inglés</option>
+                    <option value="Frances">Francés</option>
+                    <option value="Italiano">Italiano</option>
+                    <option value="Alemán">Aleman</option>
+                    <option value="Ingles">Inglés</option>
+                    <option value="Frances">Francés</option>
+                    <option value="Italiano">Italiano</option>
+                    <option value="Alemán">Aleman</option>
                   </select>
                 </div>
                 <div class="form-group">
@@ -436,14 +465,19 @@ export default {
                 <div v-if="tipoServicio === 'Inmersion'" class="form-group">
                   <label for="tipoAlojamiento">Tipo de Alojamiento</label>
                   <select v-model="tipoAlojamiento" class="form-control" id="tipoAlojamiento">
-                    <option value="mediaPension">Media Pension</option>
-                    <option value="pensionCompleta">Pension Completa</option>
-                    <option value="sinmanutencion">Sin manutencion</option>
+                    <option value="Media Pension">Media Pension</option>
+                    <option value="Pension Completa">Pension Completa</option>
+                    <option value="Sin Manutencion">Sin manutencion</option>
+                    <option value="Media Pension">Media Pension</option>
+                    <option value="Pension Completa">Pension Completa</option>
+                    <option value="Sin Manutencion">Sin manutencion</option>
                   </select>
                 </div>
               </div>
             </form>
           </div>
+          <Message severity="error" v-if="!idioma">Seleccione un idioma
+          </Message>
           <Message severity="error" v-if="numeroAlumnos && (numeroAlumnos < 1 || numeroAlumnos > 30)">Número inválido
           </Message>
           <Message severity="error" v-if="fechaInicio && fechaInicio <= new Date()">Fecha Inicio debe ser posterior a
@@ -455,12 +489,16 @@ export default {
           <Message severity="error"
             v-if="(!tipoServicio || !descripcion || !fechaInicio || !fechaFin || !idioma || !numeroAlumnos)">Por favor
             rellena todos los campos</Message>
+
+
           <div class="modal-footer">
             <button type="button" @click="cancelarServicio()" class="btn btn-secondary"
               data-bs-dismiss="modal">Cerrar</button>
             <button v-if="servicioEditar" type="button" data-bs-dismiss="modal" @click="actualizarServicio()"
               class="btn btn-primary">Actualizar
               Servicio</button>
+
+
             <button v-else="!servicioEditar" type="button" data-bs-dismiss="modal" @click="guardarServicio()"
               class="btn btn-primary">Guardar
               Servicio</button>
@@ -487,5 +525,9 @@ ul {
 
 li {
   margin: 10px 0;
+}
+
+i{
+  cursor: pointer;
 }
 </style>

@@ -22,23 +22,16 @@ function llamadaAPI(method = "get", body = null, path) {
   }
   return axios.request(config);
 }
-export function cambiarHttpPorHttps(enlace) {
-  return enlace.replace('http', 'https')
-}
 export function getServicios() {
   return llamadaAPI("get", null, API_SERVICIOS)
 }
+export function cambiarHttpPorHttps(enlace) {
+  return enlace.replace('http', 'https')
+}
 
-export function getClientes() {
-  return llamadaAPI("get", null, API_CLIENTES)
-}
-export function getCliente(url) {
-  return llamadaAPI("get", null, url);
-}
 export function postServicio(data) {
   return llamadaAPI("post", data, API_SERVICIOS)
 }
-
 export function postServicioInmersion(data) {
   return llamadaAPI("post", data, API_SERVICIOS_INMERSION)
 }
@@ -49,6 +42,11 @@ export function postServicioIntercambio(data) {
 export function deleteServicio(data) {
   return llamadaAPI("delete", null, data)
 }
+export function patchServicio(entidad, data) {
+  return llamadaAPI("patch", data, entidad)
+}
+
+
 
 export function getReservas() {
   return llamadaAPI("get", null, API_RESERVAS)
@@ -80,17 +78,26 @@ export function deleteReserva(reservaId) {
   return llamadaAPI("delete", null, reservaId)
 }
 
+export function patchReserva(entidad, data) {
+  return llamadaAPI("patch", data, entidad)
+}
+
 export function putReserva(entidad, data) {
   return llamadaAPI("put", data, entidad)
 }
 
+
+
+export function getClientes() {
+  return llamadaAPI("get", null, API_CLIENTES)
+}
+export function getCliente(url) {
+  return llamadaAPI("get", null, url);
+}
+
+
+
 export function putEntidad(entidad, data) {
   return llamadaAPI("put", data, cambiarHttpPorHttps(entidad))
 }
-export function patchServicio(entidad, data) {
-  return llamadaAPI("patch", data, entidad)
-}
 
-export function patchReserva(entidad, data) {
-  return llamadaAPI("patch", data, entidad)
-}

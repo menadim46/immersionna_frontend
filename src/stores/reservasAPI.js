@@ -32,6 +32,11 @@ export const useReservasAPIStore = defineStore("reservasAPI", {
               ...reserva,
               servicio: datosServicio,
               nombreApellidosCliente: respuestaCliente.data.nombreApellidos,
+              correo:respuestaCliente.data.correo,
+              dni:respuestaCliente.data.dni,
+              telefono:respuestaCliente.data.telefono,
+              numeroPasaporte:respuestaCliente.data.numeroPasaporte,
+              urlCliente:respuestaCliente.data._links.self.href
             };
           });
           this.reservasAPI = await Promise.all(promises);
@@ -106,6 +111,7 @@ export const useReservasAPIStore = defineStore("reservasAPI", {
         console.log("Reserva no encontrada")
       }
     },
+    
     asignarUsuarioStore(reservaHref, usuarioCambiado) {
       const index = this.reservasAPI.findIndex(reserva => reserva._links.self.href === reservaHref)
       if (index !== -1) {

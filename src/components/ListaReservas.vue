@@ -107,7 +107,6 @@ export default {
         if (usuarioRespuesta) {
           this.errorAsignar = true
         }
-        console.log("respuesta al consultar ", usuarioRespuesta)
         return usuarioRespuesta
       } catch (error) {
         console.error('Error al consultar:', error)

@@ -7,7 +7,7 @@ import PrimeVue from 'primevue/config'
 import 'primevue/resources/themes/aura-light-green/theme.css'
 import VCalendar from 'v-calendar';
 import 'v-calendar/style.css';
-import { setupCalendar,DatePicker } from 'v-calendar';
+import { setupCalendar, DatePicker } from 'v-calendar';
 import 'v-calendar/style.css';
 import VDatePicker from 'v-calendar';
 // Import our custom CSS
@@ -20,18 +20,21 @@ import * as bootstrap from 'bootstrap'
 
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import { faUser,faListCheck ,faCalendarDays,faGlobe, faTrash} from '@fortawesome/free-solid-svg-icons'
-import {  } from '@fortawesome/free-brands-svg-icons'
-import ListaServicios from './components/ListaServicios.vue'
-import ListaReservas from './components/ListaReservas.vue'
+import { faUser, faListCheck, faCalendarDays, faGlobe, faTrash } from '@fortawesome/free-solid-svg-icons'
+import { } from '@fortawesome/free-brands-svg-icons'
+import ListaServicios from '@/components/ListaServicios.vue'
+import ListaReservas from '@/components/ListaReservas.vue'
+import Informes from '@/components/Informes.vue'
 
-library.add(faUser,faListCheck,faCalendarDays)
+library.add(faUser, faListCheck, faCalendarDays)
 
 const pinia = createPinia()
 
 const NotFound = () => import('@/components/NotFound.vue')
 const listaServicios = () => import('@/components/ListaServicios.vue')
 const listaReservas = () => import('@/components/ListaReservas.vue')
+const informes = () => import('@/components/Informes.vue')
+
 
 
 
@@ -41,12 +44,13 @@ const routes = [
     { path: '/home', component: Home, name: 'home' },
     { path: '/listaServicios', component: ListaServicios, name: 'listaServicios' },
     { path: '/listaReservas', component: ListaReservas, name: 'listaReservas' },
+    { path: '/informes', component: Informes, name: 'informes' },
     { path: '/:pathMatch(.*)', component: NotFound, name: 'notfound' }
 ]
 
 const router = createRouter({
     history: createWebHashHistory(),
-    routes,
+    routes
 })
 
 
