@@ -7,7 +7,7 @@ export const useReservasAPIStore = defineStore("reservasAPI", {
     reservasAPI: [],
     reservasCargadasAPI: false,
     usuarios: [{ usuario: "" }, { usuario: "Pepe" }, { usuario: "Juan" }, { usuario: "Maria" }, { usuario: "Julia" }],
-    tareas: ["Registrar cliente", "Confirmar Pago", "Confirmar Alojamiento", "Confirmar Transporte",
+    tareas: ["Registrar cliente", "Confirmar Pago", "Confirmar Alojamiento", "Confirmar Transporte", "Preparado para Viajar",
       "Confirmar llegada al pais por anfitrión", "Confirmar salida del país por anfitrión",
       "Llegada a España", "Se han realizado todas las tareas"],
     usuarioSeleccionado: "",
