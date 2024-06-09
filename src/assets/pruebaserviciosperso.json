@@ -1,0 +1,144 @@
+{
+    "servicios": [
+        {
+            "descripcion": "Malvinas",
+            "idioma": "Ingles",
+            "numeroAlumnos": 0,
+            "fechaInicio": "2026-07-08",
+            "fechaFin": "2027-09-08",
+            "disponibilidad": true,
+            "hibernateLazyInitializer": {},
+            "_links": {
+                "self": {
+                    "href": "https://immersionna-0ac12e1aa919.herokuapp.com/api/servicios/47"
+                },
+                "servicio": {
+                    "href": "https://immersionna-0ac12e1aa919.herokuapp.com/api/servicios/47"
+                },
+                "reservas": {
+                    "href": "https://immersionna-0ac12e1aa919.herokuapp.com/api/servicios/47/reservas"
+                }
+            }
+        },
+        {
+            "descripcion": "Malvinas",
+            "idioma": "Ingles",
+            "numeroAlumnos": 0,
+            "fechaInicio": "2026-07-08",
+            "fechaFin": "2027-09-08",
+            "disponibilidad": true,
+            "hibernateLazyInitializer": {},
+            "_links": {
+                "self": {
+                    "href": "https://immersionna-0ac12e1aa919.herokuapp.com/api/servicios/47"
+                },
+                "servicio": {
+                    "href": "https://immersionna-0ac12e1aa919.herokuapp.com/api/servicios/47"
+                },
+                "reservas": {
+                    "href": "https://immersionna-0ac12e1aa919.herokuapp.com/api/servicios/47/reservas"
+                }
+            }
+        },
+        {
+            "descripcion": "Malvinas",
+            "idioma": "Ingles",
+            "numeroAlumnos": 0,
+            "fechaInicio": "2026-07-08",
+            "fechaFin": "2027-09-08",
+            "disponibilidad": true,
+            "hibernateLazyInitializer": {},
+            "_links": {
+                "self": {
+                    "href": "https://immersionna-0ac12e1aa919.herokuapp.com/api/servicios/47"
+                },
+                "servicio": {
+                    "href": "https://immersionna-0ac12e1aa919.herokuapp.com/api/servicios/47"
+                },
+                "reservas": {
+                    "href": "https://immersionna-0ac12e1aa919.herokuapp.com/api/servicios/47/reservas"
+                }
+            }
+        },
+        {
+            "descripcion": "Malvinas",
+            "idioma": "Ingles",
+            "numeroAlumnos": 0,
+            "fechaInicio": "2026-07-08",
+            "fechaFin": "2027-09-08",
+            "disponibilidad": true,
+            "hibernateLazyInitializer": {},
+            "_links": {
+                "self": {
+                    "href": "https://immersionna-0ac12e1aa919.herokuapp.com/api/servicios/47"
+                },
+                "servicio": {
+                    "href": "https://immersionna-0ac12e1aa919.herokuapp.com/api/servicios/47"
+                },
+                "reservas": {
+                    "href": "https://immersionna-0ac12e1aa919.herokuapp.com/api/servicios/47/reservas"
+                }
+            }
+        },
+        {
+            "descripcion": "Malvinas",
+            "idioma": "Ingles",
+            "numeroAlumnos": 0,
+            "fechaInicio": "2026-07-08",
+            "fechaFin": "2027-09-08",
+            "disponibilidad": true,
+            "hibernateLazyInitializer": {},
+            "_links": {
+                "self": {
+                    "href": "https://immersionna-0ac12e1aa919.herokuapp.com/api/servicios/47"
+                },
+                "servicio": {
+                    "href": "https://immersionna-0ac12e1aa919.herokuapp.com/api/servicios/47"
+                },
+                "reservas": {
+                    "href": "https://immersionna-0ac12e1aa919.herokuapp.com/api/servicios/47/reservas"
+                }
+            }
+        },
+        {
+            "descripcion": "Malvinas",
+            "idioma": "Ingles",
+            "numeroAlumnos": 0,
+            "fechaInicio": "2026-07-08",
+            "fechaFin": "2027-09-08",
+            "disponibilidad": true,
+            "hibernateLazyInitializer": {},
+            "_links": {
+                "self": {
+                    "href": "https://immersionna-0ac12e1aa919.herokuapp.com/api/servicios/47"
+                },
+                "servicio": {
+                    "href": "https://immersionna-0ac12e1aa919.herokuapp.com/api/servicios/47"
+                },
+                "reservas": {
+                    "href": "https://immersionna-0ac12e1aa919.herokuapp.com/api/servicios/47/reservas"
+                }
+            }
+        },
+        {
+            "descripcion": "Malvinas",
+            "idioma": "Ingles",
+            "numeroAlumnos": 0,
+            "fechaInicio": "2026-07-08",
+            "fechaFin": "2027-09-08",
+            "disponibilidad": true,
+            "hibernateLazyInitializer": {},
+            "_links": {
+                "self": {
+                    "href": "https://immersionna-0ac12e1aa919.herokuapp.com/api/servicios/47"
+                },
+                "servicio": {
+                    "href": "https://immersionna-0ac12e1aa919.herokuapp.com/api/servicios/47"
+                },
+                "reservas": {
+                    "href": "https://immersionna-0ac12e1aa919.herokuapp.com/api/servicios/47/reservas"
+                }
+            }
+        }
+    ]
+}

@@ -7,6 +7,7 @@ const API_RESERVAS = host + "reservas"
 const API_CLIENTES = host + "clientes"
 const API_SERVICIOS_INMERSION = host + "serviciosInmersion"
 const API_SERVICIOS_INTERCAMBIO = host + "serviciosIntercambio"
+// const API_SERVICIOS_CLIENTE_FECHA= host + "clientes" + numeroCliente + "servicios-contratados?" + fecha 
 
 function llamadaAPI(method = "get", body = null, path) {
   let config = {
@@ -27,6 +28,14 @@ export function getServicios() {
 }
 export function cambiarHttpPorHttps(enlace) {
   return enlace.replace('http', 'https')
+}
+
+export function getServiciosClienteFecha(clienteConsulta) {
+  if (!clienteConsulta.idConsultar || !clienteConsulta.fechaConsultar) {
+    console.error('Faltan datos');
+  }
+  const API_SERVICIOS_CLIENTE_FECHA = `${host}clientes/${clienteConsulta.idConsultar}/servicios-contratados?fecha=${clienteConsulta.fechaConsultar}`;
+  return llamadaAPI("get", null, API_SERVICIOS_CLIENTE_FECHA);
 }
 
 export function postServicio(data) {

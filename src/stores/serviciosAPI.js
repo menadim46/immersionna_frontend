@@ -1,5 +1,5 @@
 import { defineStore } from "pinia"
-import { getServicios, getReservasServicio, postServicioInmersion, postServicioIntercambio, deleteServicio, patchServicio } from "@/stores/api-service"
+import { getServicios, getReservasServicio, postServicioInmersion, postServicioIntercambio, deleteServicio, patchServicio, getServiciosClienteFecha } from "@/stores/api-service"
 
 
 export const useServiciosAPIStore = defineStore("serviciosAPI", {
@@ -13,8 +13,14 @@ export const useServiciosAPIStore = defineStore("serviciosAPI", {
     usuarios: [{ usuario: "" }, { usuario: "Pepe" }, { usuario: "Juan" }, { usuario: "Maria" }, { usuario: "Julia" }],
     tareas: ["Registrar cliente", "Confirmar Pago", "Confirmar Alojamiento", "Confirmar Transporte", "Se han realizado todas las tareas"],
     servicioConsultar: '',
-    reservasServicioConsultado: []
+    reservasServicioConsultado: [],
+    serviciosClienteFecha: []
   }),
+  mutations: {
+    setServiciosClienteFecha(state, servicios) {
+      state.serviciosClienteFecha = servicios;
+    }
+  },
 
   actions: {
     async cargarServicios() {
@@ -138,7 +144,18 @@ export const useServiciosAPIStore = defineStore("serviciosAPI", {
       this.reservasServicioConsultado = await this.cargarReservasUnServicio(servicio)
       return this.reservasServicioConsultado
 
-    }
+    },
+    async serviciosClienteStore(clienteConsulta) {
+      try {
+        const response = await getServiciosClienteFecha(clienteConsulta);
+        if (response.status === 200) {
+          return response.data
+        }
+      } catch (error) {
+        console.error('Error al cargar servicios del cliente: ', error);
+        return null;
+      }
+    },
   }
 }
 )

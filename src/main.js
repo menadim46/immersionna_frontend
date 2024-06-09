@@ -25,6 +25,7 @@ import { } from '@fortawesome/free-brands-svg-icons'
 import ListaServicios from '@/components/ListaServicios.vue'
 import ListaReservas from '@/components/ListaReservas.vue'
 import Informes from '@/components/Informes.vue'
+import Consultas from '@/components/Consultas.vue'
 
 library.add(faUser, faListCheck, faCalendarDays)
 
@@ -34,7 +35,7 @@ const NotFound = () => import('@/components/NotFound.vue')
 const listaServicios = () => import('@/components/ListaServicios.vue')
 const listaReservas = () => import('@/components/ListaReservas.vue')
 const informes = () => import('@/components/Informes.vue')
-
+const consultas = () => import('@/components/Consultas.vue')
 
 
 
@@ -45,6 +46,7 @@ const routes = [
     { path: '/listaServicios', component: ListaServicios, name: 'listaServicios' },
     { path: '/listaReservas', component: ListaReservas, name: 'listaReservas' },
     { path: '/informes', component: Informes, name: 'informes' },
+    { path: '/consultas', component: Consultas, name: 'consultas' },
     { path: '/:pathMatch(.*)', component: NotFound, name: 'notfound' }
 ]
 

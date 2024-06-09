@@ -41,11 +41,25 @@ export default {
             return reservasFiltradas;
         },
         reservasConfirmadasViajar() {
-            return this.reservasFiltradasServicioSeleccionado.filter(reserva => reserva.tareaAsignada === 'Preparado para Viajar')
+            const indexPreparado = this.tareas.findIndex(tarea => tarea === 'Preparado para Viajar');
+            if (indexPreparado === -1) {
+                return [];
+            }
+            return this.reservasFiltradasServicioSeleccionado.filter(reserva => {
+                const indexTareaAsignada = this.tareas.findIndex(tarea => tarea === reserva.tareaAsignada);
+                return indexTareaAsignada >= indexPreparado;
+            })
         },
 
         reservasNoConfirmadasViajar() {
-            return this.reservasFiltradasServicioSeleccionado.filter(reserva => reserva.tareaAsignada !== 'Preparado para Viajar')
+            const indexPreparado = this.tareas.findIndex(tarea => tarea === 'Preparado para Viajar');
+            if (indexPreparado === -1) {
+                return [];
+            }
+            return this.reservasFiltradasServicioSeleccionado.filter(reserva => {
+                const indexTareaAsignada = this.tareas.findIndex(tarea => tarea === reserva.tareaAsignada);
+                return indexTareaAsignada < indexPreparado;
+            })
         },
 
     },
@@ -84,8 +98,6 @@ export default {
                 <h4><i class="pi pi-arrow-circle-left" style="font-size: 1em;"></i> Volver</h4>
             </button> </router-link>
     </div>
-
-
     <div v-if="servicioConsultar" class="container">
         <div class="container text-center">
             <div class="row justify-content-end">
@@ -108,7 +120,7 @@ export default {
                         <h5 v-if="this.servicioConsultar.disponibilidad == true">
                             <strong style="color: green">Plazas Disponibles {{
                                 this.servicioConsultar.numeroAlumnos - this.servicioConsultar.reservas.length
-                            }}</strong>
+                                }}</strong>
                         </h5>
                         <h5 v-else>
                             <strong style="color: red;">Cerrado</strong>

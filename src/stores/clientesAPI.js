@@ -12,8 +12,7 @@ export const useClientesAPIStore = defineStore("clientesAPI", {
     actions: {
         async cargarClienteAPI() {
             this.clientesAPI = [];
-            this.clientesAPI = false;
-
+            this. clientesCargadosAPI = false;
             try {
                 const response = await getClientes();
                 if (response.data._embedded && response.data._embedded.clientes) {
@@ -23,13 +22,12 @@ export const useClientesAPIStore = defineStore("clientesAPI", {
                         };
                     });
                     this.clientesAPI = await Promise.all(promises);
-                    this.reservasCargadasAPI = true
+                    this.clientesCargadosAPI = true
                 }
-
             } catch (error) {
+                console.error('Error al cargar los clientes:', error);
                 this.clientesCargadosAPI = false;
             }
-        }
-
+        },
     }
 })
