@@ -55,7 +55,7 @@ export default {
       return this.reservasFiltradas.slice().sort((a, b) => {
         const ordenFechaServicio = new Date(a.servicio.fechaInicio) - new Date(b.servicio.fechaInicio)
         const ordenTareasPendientes = this.comprobarTareasPendientes(b) - this.comprobarTareasPendientes(a)
-        const ordenUsuarioAsignado = a.usuario.localeCompare(b.usuario)
+        const ordenUsuarioAsignado = a.usuario - b.usuario
 
         if (ordenFechaServicio !== 0) {
           return ordenFechaServicio
@@ -84,7 +84,6 @@ export default {
         this.usuarioParaFiltrar = ''
       }
     },
-    reservasAPI: 'ordenarReservas',
     reservasAPI: 'ordenarReservas'
   },
 

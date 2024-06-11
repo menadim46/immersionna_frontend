@@ -17,7 +17,12 @@ export default {
         return {
             clienteSeleccionado: 'Cliente no seleccionado',
             fechaConsulta: '',
-            serviciosMostrar: ''
+            serviciosMostrar: '',
+            dni:'',
+            pasaporte:'',
+            telefono:'',
+            correo:'',
+            nombreApellidos:''
         }
     },
     computed: {
@@ -103,7 +108,7 @@ export default {
             <Column field="nombreApellidos" header="Nombre Completo" style="min-width: 3vw" class="fs-5 ">
                 <template #body="{ data }">
                     <div>
-                        <i class="pi pi-eye me-3" @click="mostrar(data)"></i> {{ data.nombreApellidos }}
+                        <i class="pi pi-eye me-3" @click="mostrar(data)"  style="color: #003366;font-size: 1.5em"></i> {{ data.nombreApellidos }}
                     </div>
                 </template>
             </Column>

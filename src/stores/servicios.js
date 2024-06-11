@@ -26,10 +26,10 @@ export const useServiciosStore = defineStore('serviciosStore', {
         todasLasReservas: (state) => {
 
             return state.servicios.reduce((acumulador, servicio) => {
-                acumulador.push(...servicio.reservas);
-                return acumulador;  
+                acumulador.push(...servicio.reservas)
+                return acumulador
                 
-            }, []);
+            }, [])
         }
     },
 

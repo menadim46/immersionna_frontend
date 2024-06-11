@@ -1,5 +1,5 @@
 import { defineStore } from "pinia"
-import { getServicios, getReservasServicio, postServicioInmersion, postServicioIntercambio, deleteServicio, patchServicio, getServiciosClienteFecha } from "@/stores/api-service"
+import { getServicios, getReservasServicio, postServicioInmersion, postServicioIntercambio, deleteServicio, patchServicio, getServiciosClienteFecha,putEntidad } from "@/stores/api-service"
 
 
 export const useServiciosAPIStore = defineStore("serviciosAPI", {
@@ -18,7 +18,7 @@ export const useServiciosAPIStore = defineStore("serviciosAPI", {
   }),
   mutations: {
     setServiciosClienteFecha(state, servicios) {
-      state.serviciosClienteFecha = servicios;
+      state.serviciosClienteFecha = servicios
     }
   },
 
@@ -126,6 +126,7 @@ export const useServiciosAPIStore = defineStore("serviciosAPI", {
     },
 
     async actualizarServicioStore(href, servicioCambiado) {
+      console.log('formato de servicio', servicioCambiado)
       try {
         const index = this.servicios.findIndex(servicio => servicio._links.self.href === href)
         if (index !== -1) {
@@ -137,23 +138,28 @@ export const useServiciosAPIStore = defineStore("serviciosAPI", {
       }
     },
 
+    async actualizarReservasServicio(href,reservaNueva){
+      console.log('anadiendo reserva y cliente')
+      await putEntidad(href,reservaNueva)
+      
+    },
+
     async guardarServicioConsultado(servicio) {
       const servicioAsignarServicioConsultar = { ...servicio }
       this.servicioConsultar = servicioAsignarServicioConsultar
-      console.log("asignado y en store", this.servicioConsultar)
       this.reservasServicioConsultado = await this.cargarReservasUnServicio(servicio)
       return this.reservasServicioConsultado
 
     },
     async serviciosClienteStore(clienteConsulta) {
       try {
-        const response = await getServiciosClienteFecha(clienteConsulta);
+        const response = await getServiciosClienteFecha(clienteConsulta)
         if (response.status === 200) {
           return response.data
         }
       } catch (error) {
-        console.error('Error al cargar servicios del cliente: ', error);
-        return null;
+        console.error('Error al cargar servicios del cliente: ', error)
+        return null
       }
     },
   }

@@ -55,10 +55,8 @@ export function patchServicio(entidad, data) {
   return llamadaAPI("patch", data, entidad)
 }
 
-
-
 export function getReservas() {
-  return llamadaAPI("get", null, API_RESERVAS)
+  return llamadaAPI("get", null, API_RESERVAS + "?size=300")
 }
 
 export function consultaReserva(url) {
@@ -71,15 +69,15 @@ export function getServicioDeReserva(url) {
 
 export function getReservasServicio(servicio) {
   const urlReservasServicio = servicio._links.reservas.href
-  return llamadaAPI("get", null, urlReservasServicio)
+  return llamadaAPI("get", null, urlReservasServicio + "?size=300")
 }
 
 export function postReservaServicioInmersion(data) {
-  return llamadaAPI("post", data, API_SERVICIOS_INMERSION)
+  return llamadaAPI("post", data, API_SERVICIOS_INMERSION + "?size=300")
 }
 
 export function postReservaServicioIntercambio(data) {
-  return llamadaAPI("post", data, API_SERVICIOS_INTERCAMBIO)
+  return llamadaAPI("post", data, API_SERVICIOS_INTERCAMBIO + "?size=300")
 }
 
 export function deleteReserva(reservaId) {
@@ -94,19 +92,30 @@ export function patchReserva(entidad, data) {
 export function putReserva(entidad, data) {
   return llamadaAPI("put", data, entidad)
 }
-
-
+export function postReserva(data) {
+  return llamadaAPI("post", data, API_RESERVAS)
+}
 
 export function getClientes() {
-  return llamadaAPI("get", null, API_CLIENTES)
+  return llamadaAPI("get", null, API_CLIENTES + "?size=300")
 }
 export function getCliente(url) {
   return llamadaAPI("get", null, url);
 }
 
+export function postCliente(data) {
+  return llamadaAPI("post", data, API_CLIENTES)
+}
 
+export function putCliente(entidad, data) {
+  return llamadaAPI("put", data, entidad)
+}
 
 export function putEntidad(entidad, data) {
   return llamadaAPI("put", data, cambiarHttpPorHttps(entidad))
+}
+
+export function patchEntidad(entidad, data) {
+  return llamadaAPI("patch", data, cambiarHttpPorHttps(entidad))
 }
 

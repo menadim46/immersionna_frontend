@@ -10,12 +10,10 @@ import 'v-calendar/style.css';
 import { setupCalendar, DatePicker } from 'v-calendar';
 import 'v-calendar/style.css';
 import VDatePicker from 'v-calendar';
-// Import our custom CSS
 import '@/scss/styles.scss'
 import { PrimeIcons } from 'primevue/api'
 import 'primeicons/primeicons.css'
 
-// Import all of Bootstrap's JS
 import * as bootstrap from 'bootstrap'
 
 import { library } from '@fortawesome/fontawesome-svg-core'
@@ -26,6 +24,7 @@ import ListaServicios from '@/components/ListaServicios.vue'
 import ListaReservas from '@/components/ListaReservas.vue'
 import Informes from '@/components/Informes.vue'
 import Consultas from '@/components/Consultas.vue'
+import Clientes from '@/components/Clientes.vue'
 
 library.add(faUser, faListCheck, faCalendarDays)
 
@@ -36,9 +35,7 @@ const listaServicios = () => import('@/components/ListaServicios.vue')
 const listaReservas = () => import('@/components/ListaReservas.vue')
 const informes = () => import('@/components/Informes.vue')
 const consultas = () => import('@/components/Consultas.vue')
-
-
-
+const clientes = () => import ('@/components/Clientes.vue')
 
 const routes = [
     { path: '/', redirect: '/home' },
@@ -47,6 +44,7 @@ const routes = [
     { path: '/listaReservas', component: ListaReservas, name: 'listaReservas' },
     { path: '/informes', component: Informes, name: 'informes' },
     { path: '/consultas', component: Consultas, name: 'consultas' },
+    { path: '/clientes', component: Clientes, name: 'clientes' },
     { path: '/:pathMatch(.*)', component: NotFound, name: 'notfound' }
 ]
 
@@ -54,8 +52,6 @@ const router = createRouter({
     history: createWebHashHistory(),
     routes
 })
-
-
 
 const app = createApp(App)
 

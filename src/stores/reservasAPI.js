@@ -1,6 +1,6 @@
 import { defineStore } from "pinia"
 
-import { getReservas, getServicioDeReserva, putReserva, patchReserva, getCliente, consultaReserva } from "@/stores/api-service.js"
+import { getReservas, getServicioDeReserva, putReserva, patchReserva, getCliente, consultaReserva, postReserva } from "@/stores/api-service.js"
 
 export const useReservasAPIStore = defineStore("reservasAPI", {
   state: () => ({
@@ -18,11 +18,11 @@ export const useReservasAPIStore = defineStore("reservasAPI", {
 
   actions: {
     async cargarReservasAPI() {
-      this.reservasAPI = [];
+      this.reservasAPI = []
       this.reservasCargadasAPI = false;
 
       try {
-        const response = await getReservas();
+        const response = await getReservas()
         if (response.data._embedded && response.data._embedded.reservas) {
           const promises = response.data._embedded.reservas.map(async (reserva) => {
             const datosServicio = await this.obtenerFecha(reserva._links.servicio.href)
@@ -32,11 +32,11 @@ export const useReservasAPIStore = defineStore("reservasAPI", {
               ...reserva,
               servicio: datosServicio,
               nombreApellidosCliente: respuestaCliente.data.nombreApellidos,
-              correo:respuestaCliente.data.correo,
-              dni:respuestaCliente.data.dni,
-              telefono:respuestaCliente.data.telefono,
-              numeroPasaporte:respuestaCliente.data.numeroPasaporte,
-              urlCliente:respuestaCliente.data._links.self.href
+              correo: respuestaCliente.data.correo,
+              dni: respuestaCliente.data.dni,
+              telefono: respuestaCliente.data.telefono,
+              numeroPasaporte: respuestaCliente.data.numeroPasaporte,
+              urlCliente: respuestaCliente.data._links.self.href
             };
           });
           this.reservasAPI = await Promise.all(promises);
@@ -44,14 +44,14 @@ export const useReservasAPIStore = defineStore("reservasAPI", {
           this.reservasCargadasAPI = true;
         }
       } catch (error) {
-        console.error("Error al cargar reservas:", error);
+        console.error("Error al cargar reservas:", error)
         this.reservasCargadasAPI = false;
       }
     },
 
     async obtenerFecha(url) {
       try {
-        const response = await getServicioDeReserva(url);
+        const response = await getServicioDeReserva(url)
         return response.data
       } catch (error) {
         return;
@@ -111,7 +111,7 @@ export const useReservasAPIStore = defineStore("reservasAPI", {
         console.log("Reserva no encontrada")
       }
     },
-    
+
     asignarUsuarioStore(reservaHref, usuarioCambiado) {
       const index = this.reservasAPI.findIndex(reserva => reserva._links.self.href === reservaHref)
       if (index !== -1) {
@@ -127,5 +127,18 @@ export const useReservasAPIStore = defineStore("reservasAPI", {
         putReserva(reservaHref, this.reservasAPI[index])
       }
     },
-    
-}})
+    async anadirReservaStore(reservaRecibida) {
+
+      console.log('voy a pasar el post de reserva', reservaRecibida)
+      try {
+        const response = await postReserva(reservaRecibida)
+        if (response.status === 200) {
+          this.reservasAPI.unshift(response.data)
+        }
+      } catch {
+        console.error("Error:", error)
+      }
+    }
+
+  }
+})

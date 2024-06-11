@@ -1,14 +1,10 @@
 <script>
 
-
-
 </script>
 
 <template>
   <nav class="navbar navbar-expand-lg bg-azul navbar-dark">
     <div class="container-fluid">
-      <!-- <router-link   class="nav-link ms-5" to="/home">
-      </router-link to="/home"> -->
       <router-link style="color: aliceblue;font-weight: 700;" class="nav-link ms-5 mt-2 align-items-center" to="/home">
         <img id="logoImersiona" src="/src/assets/logo_immersionna.png" alt="logo_immersionna">
         Immersionna</router-link>
@@ -30,6 +26,9 @@
 
           <li class="nav-item">
             <router-link class="nav-link ms-5" to="/consultas">Consultas</router-link>
+          </li>
+          <li class="nav-item">
+            <router-link class="nav-link ms-5" to="/clientes">Clientes</router-link>
           </li>
         </ul>
       </div>
