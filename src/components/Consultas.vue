@@ -15,14 +15,14 @@ export default {
     components: { DataTable, Column, Dropdown, Button, ListaServicios },
     data() {
         return {
-            clienteSeleccionado: 'Cliente no seleccionado',
+            clienteSeleccionado: {},
             fechaConsulta: '',
             serviciosMostrar: '',
-            dni:'',
-            pasaporte:'',
-            telefono:'',
-            correo:'',
-            nombreApellidos:''
+            dni: '',
+            pasaporte: '',
+            telefono: '',
+            correo: '',
+            nombreApellidos: ''
         }
     },
     computed: {
@@ -54,9 +54,9 @@ export default {
                 const fechaConsultar = this.fechaConsulta
                 try {
                     const servicios = await this.serviciosClienteStore({ idConsultar, fechaConsultar });
-                    if (servicios  && servicios._embedded && servicios._embedded.servicios) {
+                    if (servicios && servicios._embedded && servicios._embedded.servicios) {
                         this.serviciosMostrar = servicios._embedded.servicios;
-                    } 
+                    }
                 } catch (error) {
                     console.error('Error para obtener servicios del cliente:', error);
                 }
@@ -74,6 +74,7 @@ export default {
 </script>
 
 <template>
+
     <div class="container">
         <h1><strong>Clientes</strong></h1>
     </div>
@@ -84,9 +85,12 @@ export default {
         <div class="ms-3 me-3 mt-3 mb-3 ">
             <input type="date" class="form-control" id="fechaInicio" v-model="fechaConsulta">
         </div>
-        <div v-if="fechaConsulta && clienteSeleccionado"> <Button @click="consultarServiciosCliente()"><i
-                    class="pi pi-search me-3"></i>
-                Consultar</Button></div>
+        <div v-if="fechaConsulta && clienteSeleccionado">
+            <button @click="consultarServiciosCliente()" type="button" class="btn btn-success"
+                style="font-size: 1.5em;">
+                <h4><i class="pi pi-search me-3" style="font-size: 1em;"></i> Consultar</h4>
+            </button>
+        </div>
     </div>
     <div>
         <div class="mt-5 mb-5" v-if="serviciosMostrar">
@@ -98,17 +102,21 @@ export default {
                 </ol>
             </ul>
         </div>
-        <div class="text-center" v-else="clienteSeleccionado && serviciosMostrar == ''"> No existen servicios para mostrar</div>
-        <div class="text-center mt-3 mb-3" style="color:green;font-weight: 700;"> Seleccione un cliente de la lista y una
-            fecha desde la que desea realizar la consulta</div>
-            </div>
+        <div class="text-center" v-else="clienteSeleccionado && serviciosMostrar == ''"> No existen servicios para
+            mostrar</div>
+        <div class="text-center mt-3 mb-3" style="color:green;font-weight: 700;">
+            Seleccione un cliente <i class="pi pi-eye me-3" style="color: #003366;font-size: 1.5em"></i> y
+            fecha <i class="pi pi-calendar me-3" style="color: #003366;font-size: 1.5em"></i>desde la que desea realizar
+            la consulta</div>
+    </div>
     <div class="container">
         <DataTable :value="this.clientesAPI" resizableColumns columnResizeMode="fit" paginator :rows="50" stripedRows
-            tableStyle="min-width: 30vw">
+            tableStyle="min-width: 20vw">
             <Column field="nombreApellidos" header="Nombre Completo" style="min-width: 3vw" class="fs-5 ">
                 <template #body="{ data }">
                     <div>
-                        <i class="pi pi-eye me-3" @click="mostrar(data)"  style="color: #003366;font-size: 1.5em"></i> {{ data.nombreApellidos }}
+                        <i class="pi pi-eye me-3" @click="mostrar(data)" style="color: #003366;font-size: 1.5em"></i> {{
+                            data.nombreApellidos }}
                     </div>
                 </template>
             </Column>

@@ -46,7 +46,7 @@ export default {
                     <div class="card flex justify-content-center">
                     </div>
                     <DataTable :value="this.ordenarClientes" paginator :rows="20" stripedRows
-                        tableStyle="min-width: 60vw">
+                        tableStyle="min-width: 15vw">
                         <Column field="dni" header="DNI" style="min-width: 1vw" class="fs-5">
                             <template #body="{ data }">
                                 {{ data.dni }}

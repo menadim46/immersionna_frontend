@@ -86,7 +86,7 @@ export default {
   methods: {
     ...mapActions(useServiciosAPIStore, ['cargarServicios', 'cargarReservasTodosServicios',
       'cargarReservasUnServicio', 'crearNuevoServicioStore',
-      'anadirServicioStore', 'deleteServicioStore', 'guardarServicioConsultado']),
+      'anadirServicioStore', 'deleteServicioStore', 'guardarServicioConsultado','actualizarServicioStore']),
 
 
     obtenerId(url) {
@@ -206,13 +206,7 @@ export default {
   <div class="container mt-3">
     <Message severity="success" :sticky="sticky" :life="1000" v-if="servicioAnadido">Se ha añadido el Servicio
     </Message>
-
-    <Message severity="success" :sticky="sticky" :life="1000" v-if="servicioAnadido">Se ha añadido el Servicio
-    </Message>
-
     <h1 class="titulo p-2 text-center"><strong>Listado de Servicios</strong></h1>
-
-
     <button type="button" class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#exampleModal"
       style="font-size: 1.5em;">
       <h4><i class="pi pi-plus-circle me-3" style="font-size: 1em;"></i> Añadir Servicio</h4>
@@ -407,7 +401,7 @@ export default {
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-            <form @submit.prevent="enviarFormulario" class="row g-3">
+            <form @submit.prevent="handlerSubmit" class="row g-3">
               <div>
                 <div class="form-group">
                   <label for="tipoServicio">Tipo de Servicio</label>

@@ -72,60 +72,16 @@ export default {
         },
 
     },
-    setup() {
-
-        const nombreApellidos = ref('');
-        const correo = ref('');
-        const fechaReserva = ref('');
-        const numeroPasaporte = ref('');
-        const dni = ref('');
-        const telefono = ref('');
-
-        const handleSubmit = async () => {
-            const nuevoCliente = {
-                nombreApellidos: nombreApellidos.value,
-                correo: correo.value,
-                fechaReserva: fechaReserva.value,
-                numeroPasaporte: numeroPasaporte.value,
-                dni: dni.value,
-                telefono: telefono.value,
-            }
-
-            try {
-                const clienteCreado = await useClientesAPIStore.crearCliente(nuevoCliente);
-                console.log('Cliente creado:', clienteCreado);
-                await reservasStore.anadirReservaStore({
-                    cliente: clienteCreado,
-                    servicio: servicioConFechaReserva.servicio,
-                    fechaReserva: servicioConFechaReserva.fechaReserva,
-                });
-
-                console.log('Reserva añadida con éxito');
-            } catch (error) {
-                console.error('Error al guardar la reserva:', error);
-            }
-        };
-
-        return {
-            nombreApellidos,
-            correo,
-            fechaReserva,
-            numeroPasaporte,
-            dni,
-            telefono,
-            handleSubmit,
-            respuestaCreacionParaCliente: useClientesAPIStore.respuestaClienteCreado,
-        };
-    },
+   
 
     watch: {
-        reserva: {
+        cliente: {
             inmedite: true,
             handler(nuevoValor) {
                 if (nuevoValor) {
                     this.nombreApellidos = nuevoValor.nombreApellidos
                     this.correo = nuevoValor.correo
-                    this.fechaReserva = nuevoValor.fechaReserva
+                    // this.fechaReserva = nuevoValor.fechaReserva
                     this.numeroPasaporte = nuevoValor.numeroPasaporte
                     this.dni = nuevoValor.dni
                     this.telefono = nuevoValor.telefono
@@ -184,6 +140,7 @@ export default {
                 console.log('despues de cargar desde guardarReserva', this.respuestaClienteCreado)
             console.log('informes', this.respuestaCreacionParaCliente)
             await this.crearNuevaReserva(servicioConFechaReserva)
+            await this.cargarClienteAPI()
             await this.cargarReservasAPI()
             this.resetearCampos()
         },
@@ -226,14 +183,13 @@ export default {
                 this.dni = '',
                 this.telefono = ''
         },
-
-    },
-    mounted() {
-        this.cargarReservasAPI()
-        this.cargarClienteAPI()
-        this.cargarServicios()
-    }
-}
+        },
+        mounted() {
+            this.cargarReservasAPI()
+            this.cargarClienteAPI()
+            this.cargarServicios()
+            }
+            }
 
 </script>
 
@@ -249,13 +205,13 @@ export default {
             </router-link>
 
         </div>
-        <div class="col-sm-6 justify-content-center">
+        <div v-if="this.servicioConsultar.disponibilidad == true && this.servicioConsultar.reservas.length < this.servicioConsultar.numeroAlumnos
+        || this.servicioConsultar.fechaInicio > new Date()"
+         class="col-sm-6 justify-content-center">
             <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#formularioReserva"
                 style="font-size: 1.5em;">
                 <div><i class="pi pi-plus-circle me-3" style="font-size: 1em;"></i> Añadir Reserva</div>
             </button>
-
-
         </div>
     </div>
     <div>
@@ -279,12 +235,17 @@ export default {
                             {{ this.servicioConsultar.idioma }}
                         </h5>
 
-                        <h5 v-if="this.servicioConsultar.disponibilidad == true">
+                        <h5 v-if="this.servicioConsultar.disponibilidad == true && this.servicioConsultar.reservas.length < this.servicioConsultar.numeroAlumnos">
                             <strong style="color: green">Plazas Disponibles {{
                                 this.servicioConsultar.numeroAlumnos - this.servicioConsultar.reservas.length
                             }}</strong>
                         </h5>
-                        <h5 v-else>
+                        <h5 v-else-if="this.servicioConsultar.fechaInicio < new Date()">
+                            <strong style="color: green;">En curso...</strong>
+                        </h5>
+                        <h5 v-else="this.servicioConsultar.fechaInicio < new Date() 
+                        && this.servicioConsultar.disponibilidad == true 
+                        && this.servicioConsultar.reservas.length < this.servicioConsultar.numeroAlumnos"><i class="pi pi-lock me-3" style="font-size: 1.2em"></i>
                             <strong style="color: red;">Cerrado</strong>
                         </h5>
                         <h5 style="color:#003366; font-weight: 600;" v-if="this.servicioConsultar.tipoAlojamiento">
@@ -297,7 +258,7 @@ export default {
                             v-if="diasRestantes(this.servicioConsultar.fechaInicio) > 0">Quedan {{
                                 diasRestantes(this.servicioConsultar.fechaInicio) }} dias</h6>
 
-                        <h4 class="mt-3" style="color:#003366; font-weight: 600;">Confirmados para viajar ({{
+                        <h4 class="mt-3" style="color:#003366; font-weight: 600;">Confirmados para el viaje ({{
                             this.reservasConfirmadasViajar.length }})</h4>
                         <DataTable :value="this.reservasConfirmadasViajar" resizableColumns columnResizeMode="fit"
                             paginator :rows="50" stripedRows tableStyle="min-width: 30vw">
@@ -422,7 +383,7 @@ export default {
                     </h1>
                 </div>
                 <div class="modal-body">
-                    <form @submit.handleSubmit="enviarFormulario" class="row g-3">
+                    <form @submit.prevent="handlerSubmit"  class="row g-3">
                         <div>
                             <div class="form-group">
                                 <label for="fechaReserva">Fecha de Reserva</label>
@@ -457,7 +418,7 @@ export default {
                     hoy
                 </Message>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" @click="resetearCampos()">Cerrar</button>
 
 
                     <button type="button" data-bs-dismiss="modal" @click="guardarReserva()"

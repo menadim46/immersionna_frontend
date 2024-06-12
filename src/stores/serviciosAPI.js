@@ -126,7 +126,6 @@ export const useServiciosAPIStore = defineStore("serviciosAPI", {
     },
 
     async actualizarServicioStore(href, servicioCambiado) {
-      console.log('formato de servicio', servicioCambiado)
       try {
         const index = this.servicios.findIndex(servicio => servicio._links.self.href === href)
         if (index !== -1) {

@@ -130,7 +130,6 @@ export default {
           console.error('Error al asignar usuario:', error, reserva.usuario)
         }
       } else {
-        console.log('Usuario ya asignado o no seleccionado', reserva.usuario)
         this.errorAsignar = true
       }
     },
