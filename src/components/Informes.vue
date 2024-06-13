@@ -27,7 +27,9 @@ export default {
             nivelEstudios: '',
             tipoAlojamiento: '',
             clienteObtenerUrl: {},
-            clienteUrlEncontrada: ''
+            clienteUrlEncontrada: '',
+            respuestaCreacionParaCliente: '',
+            errorPertenece: false
         }
     },
     computed: {
@@ -70,9 +72,14 @@ export default {
         clientesOrdenadosNombre() {
             this.clientesAPI.slice().sort((a, b) => a.nombreApellidos - b.nombreApellidos);
         },
+        numeroAlumnosRestantes() {
+            if (this.servicioConsultar) {
+                return this.servicioConsultar.numeroAlumnos - this.reservasFiltradasServicioSeleccionado.length;
+            }
+        }
 
     },
-   
+
 
     watch: {
         cliente: {
@@ -81,21 +88,25 @@ export default {
                 if (nuevoValor) {
                     this.nombreApellidos = nuevoValor.nombreApellidos
                     this.correo = nuevoValor.correo
-                    // this.fechaReserva = nuevoValor.fechaReserva
                     this.numeroPasaporte = nuevoValor.numeroPasaporte
                     this.dni = nuevoValor.dni
                     this.telefono = nuevoValor.telefono
-
-
                 }
             }
+        },
+        reservasFiltradasServicioSeleccionado() {
+            this.actualizarNumeroPlazas();
+        },
+
+        todasReservas() {
+            this.reservasFiltradasServicioSeleccionado
         }
     },
     methods: {
-        ...mapActions(useReservasAPIStore, ['cargarReservasAPI', 'asignarUsuarioStore', 'actualizarReserva', 'completarTareaStore', 'anadirReservaStore']),
+        ...mapActions(useReservasAPIStore, ['cargarReservasAPI', 'asignarUsuarioStore', 'actualizarReserva', 'completarTareaStore', 'anadirReservaStore', 'actualizarServicioStore']),
         ...mapActions(useClientesAPIStore, ['cargarClienteAPI', 'crearCliente', 'actualizarDatosCliente']),
-        ...mapActions(useServiciosAPIStore, ['cargarServicios', 'consultar', 'consultarReservasServicio', 'cargarReservasTodosServicios', 'actualizarReservasServicio']),
-       
+        ...mapActions(useServiciosAPIStore, ['cargarServicios', 'consultar', 'consultarReservasServicio', 'cargarReservasTodosServicios', 'actualizarReservasServicio', 'getReservasServicio']),
+
         diasRestantes(fechaInicio) {
             const hoy = new Date();
             const fechaServicio = new Date(fechaInicio);
@@ -103,54 +114,21 @@ export default {
             const diasRestantes = Math.ceil(diferenciaMilisegundos / (1000 * 3600 * 24));
             return diasRestantes;
         },
-
-        async guardarReserva() {
-            const clienteGrabar = {
-                dni: this.dni,
-                correo: this.correo,
-                telefono: this.telefono,
-                nombreApellidos: this.nombreApellidos,
-                numeroPasaporte: this.numeroPasaporte,
-                url: this.respuestaCreacionParaCliente
+        actualizarNumeroPlazas() {
+            if (this.servicioConsultar) {
+                this.numeroAlumnosRestantes = this.servicioConsultar.numeroAlumnos - this.reservasFiltradasServicioSeleccionado.length;
             }
-
-            try {
-                const promesas = [
-                    this.crearOActualizarCliente(clienteGrabar),
-                    console.log('informes', this.respuestaCreacionParaCliente),
-
-                    this.cargarClienteAPI(),
-
-                    this.obtenerUrlCliente(clienteGrabar.dni),
-                ];
-                console.log('informes', this.respuestaCreacionParaCliente)
-
-                const resultados = await Promise.all(promesas);
-                console.log('Todas las promesas completadas:', resultados);
-            } catch (error) {
-                console.error('Error al guardar la reserva:', error);
-            }
-            const servicioConFechaReserva = {
-                fechaReserva: this.fechaReserva,
-                cliente: this.respuestaCreacionParaCliente._links.cliente.href,
-                servicio: this.servicioConsultar._links.self.href,
-                tareaAsignada: "Registrar cliente"
-            }
-            this.cargarClienteAPI(),
-                console.log('despues de cargar desde guardarReserva', this.respuestaClienteCreado)
-            console.log('informes', this.respuestaCreacionParaCliente)
-            await this.crearNuevaReserva(servicioConFechaReserva)
-            await this.cargarClienteAPI()
-            await this.cargarReservasAPI()
-            this.resetearCampos()
         },
 
         async crearOActualizarCliente(clienteComprobar) {
             const clientePertenece = this.clientesAPI.find(cliente => cliente.dni === clienteComprobar.dni);
+
             if (clientePertenece) {
-                await this.actualizarDatosCliente(clientePertenece, clienteComprobar)
+                await this.actualizarDatosCliente(clientePertenece._links.self.href, clienteComprobar)
+                this.respuestaCreacionParaCliente = clientePertenece
                 console.log('actualizo cliente con estos datos', clientePertenece)
-            } else {
+            }
+            else {
                 console.log('creo cliente', clienteComprobar)
                 this.clienteUrlEncontrada = await this.crearCliente(clienteComprobar)
                 console.log('respuesta desde componente', this.clienteUrlEncontrada)
@@ -166,16 +144,77 @@ export default {
             if (!this.clienteUrlEncontrada) {
                 this.cargarClienteAPI()
                 this.clienteUrlEncontrada = this.respuestaClienteCreado
-                console.log('ultimo cliente despues de crear', this.clientesAPI)
             }
         },
 
-        async crearNuevaReserva(servicio, cliente) {
-            this.anadirReservaStore(servicio, cliente)
-        },
+        crearNuevaReserva(servicio, cliente) {
+            if (this.servicioConsultar) {
+                let reservasActuales = this.servicioConsultar.reservas.length
+                if (this.servicioConsultar.disponibilidad == true || this.servicioConsultar.numeroAlumnos < reservasActuales) {
+                    this.anadirReservaStore(servicio, cliente)
+                    console.log('Creada nueva reserva')
 
+                }
+            } else {
+
+                console.log('esta petado')
+            }
+
+        },
+        async guardarReserva() {
+            const clienteGrabar = {
+                dni: this.dni,
+                correo: this.correo,
+                telefono: this.telefono,
+                nombreApellidos: this.nombreApellidos,
+                numeroPasaporte: this.numeroPasaporte,
+                url: this.respuestaCreacionParaCliente
+            }
+            const clientePerteneceServicio = this.reservasFiltradasServicioSeleccionado.find(reserva => reserva.dni === clienteGrabar.dni)
+
+            if (this.servicioConsultar) {
+                try {
+
+                    const promesas = [
+                        this.crearOActualizarCliente(clienteGrabar),
+
+                        this.cargarClienteAPI(),
+
+                        this.obtenerUrlCliente(clienteGrabar.dni),
+                    ];
+
+                    const resultados = await Promise.all(promesas)
+                    console.log('Todas las promesas completadas:', resultados)
+
+                } catch (error) {
+                    console.error('Error al guardar la reserva:', error)
+                }
+                if (this.respuestaCreacionParaCliente && this.respuestaCreacionParaCliente._links && this.respuestaCreacionParaCliente._links.cliente) {
+                    const servicioConFechaReserva = {
+                        fechaReserva: this.fechaReserva,
+                        cliente: this.respuestaCreacionParaCliente._links.cliente.href,
+                        servicio: this.servicioConsultar._links.self.href,
+                        tareaAsignada: "Registrar cliente"
+                    }
+                    this.cargarClienteAPI(),
+                        console.log('informes', this.respuestaCreacionParaCliente)
+                    if (!clientePerteneceServicio) {
+                        this.crearNuevaReserva(servicioConFechaReserva, this.respuestaCreacionParaCliente)
+                    } else {
+                        this.errorPertenece = true
+
+                    }
+                    await this.cargarServicios()
+                    await this.cargarReservasAPI()
+                    await this.cargarClienteAPI()
+                    this.resetearCampos()
+
+                } else {
+                    console.error('Respuesta para creacion erronea:', this.respuestaCreacionParaCliente)
+                }
+            }
+        },
         resetearCampos() {
-            // this.servicio = '',
             this.nombreApellidos = '',
                 this.correo = '',
                 this.fechaReserva = '',
@@ -183,13 +222,13 @@ export default {
                 this.dni = '',
                 this.telefono = ''
         },
-        },
-        mounted() {
-            this.cargarReservasAPI()
-            this.cargarClienteAPI()
-            this.cargarServicios()
-            }
-            }
+    },
+    mounted() {
+        this.cargarServicios()
+        this.cargarClienteAPI()
+        this.cargarReservasAPI()
+    }
+}
 
 </script>
 
@@ -205,18 +244,21 @@ export default {
             </router-link>
 
         </div>
-        <div v-if="this.servicioConsultar.disponibilidad == true && this.servicioConsultar.reservas.length < this.servicioConsultar.numeroAlumnos
-        || this.servicioConsultar.fechaInicio > new Date()"
-         class="col-sm-6 justify-content-center">
+        <div v-if="this.servicioConsultar.disponibilidad == true && this.numeroAlumnosRestantes > 0
+            || this.servicioConsultar.fechaInicio > new Date()" class="col-sm-6 justify-content-center">
             <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#formularioReserva"
                 style="font-size: 1.5em;">
                 <div><i class="pi pi-plus-circle me-3" style="font-size: 1em;"></i> Añadir Reserva</div>
             </button>
         </div>
+        <div class="container">
+            <Message severity="error" :sticky="sticky" :life="1000" v-if="errorPertenece">Este usuario ya tiene una
+                reserva en este servicio</Message>
+        </div>
     </div>
     <div>
     </div>
-    <div v-if="servicioConsultar" class="container">
+    <div v-if="servicioConsultar !== ''" class="container">
         <div class="container text-center">
             <div class="row justify-content-end">
                 <div class="col-12">
@@ -234,20 +276,6 @@ export default {
                         <h5 style="color:#003366; font-weight: 600;">
                             {{ this.servicioConsultar.idioma }}
                         </h5>
-
-                        <h5 v-if="this.servicioConsultar.disponibilidad == true && this.servicioConsultar.reservas.length < this.servicioConsultar.numeroAlumnos">
-                            <strong style="color: green">Plazas Disponibles {{
-                                this.servicioConsultar.numeroAlumnos - this.servicioConsultar.reservas.length
-                            }}</strong>
-                        </h5>
-                        <h5 v-else-if="this.servicioConsultar.fechaInicio < new Date()">
-                            <strong style="color: green;">En curso...</strong>
-                        </h5>
-                        <h5 v-else="this.servicioConsultar.fechaInicio < new Date() 
-                        && this.servicioConsultar.disponibilidad == true 
-                        && this.servicioConsultar.reservas.length < this.servicioConsultar.numeroAlumnos"><i class="pi pi-lock me-3" style="font-size: 1.2em"></i>
-                            <strong style="color: red;">Cerrado</strong>
-                        </h5>
                         <h5 style="color:#003366; font-weight: 600;" v-if="this.servicioConsultar.tipoAlojamiento">
                             {{ this.servicioConsultar.tipoAlojamiento }}
                         </h5>
@@ -257,7 +285,19 @@ export default {
                         <h6 style="color: red;font-weight: 600;"
                             v-if="diasRestantes(this.servicioConsultar.fechaInicio) > 0">Quedan {{
                                 diasRestantes(this.servicioConsultar.fechaInicio) }} dias</h6>
-
+                        <h5 v-if="this.servicioConsultar.disponibilidad == true && numeroAlumnosRestantes > 0">
+                            <strong style="color: green">Plazas Disponibles {{ numeroAlumnosRestantes }}
+                            </strong>
+                        </h5>
+                        <h5 v-else-if="this.servicioConsultar.fechaInicio < new Date()">
+                            <strong style="color: green;">En curso...</strong>
+                        </h5>
+                        <h5 v-else="this.servicioConsultar.fechaInicio < new Date() 
+                        && this.servicioConsultar.disponibilidad == true 
+                        && this.servicioConsultar.reservas.length < this.servicioConsultar.numeroAlumnos"><i
+                                class="pi pi-lock me-3" style="font-size: 1.2em"></i>
+                            <strong style="color: red;">Cerrado</strong>
+                        </h5>
                         <h4 class="mt-3" style="color:#003366; font-weight: 600;">Confirmados para el viaje ({{
                             this.reservasConfirmadasViajar.length }})</h4>
                         <DataTable :value="this.reservasConfirmadasViajar" resizableColumns columnResizeMode="fit"
@@ -288,13 +328,6 @@ export default {
                                 <template #body="{ data }">
                                     <div>
                                         {{ data.telefono }}
-                                    </div>
-                                </template>
-                            </Column>
-                            <Column field="dni" header="DNI" style="min-width: 3vw" class="fs-5 text-center">
-                                <template #body="{ data }" class="align-items-center">
-                                    <div class="text-center">
-                                        {{ data.dni }}
                                     </div>
                                 </template>
                             </Column>
@@ -340,13 +373,6 @@ export default {
                                     </div>
                                 </template>
                             </Column>
-                            <Column field="dni" header="DNI" style="min-width: 3vw" class="fs-5 text-center">
-                                <template #body="{ data }" class="align-items-center">
-                                    <div class="text-center">
-                                        {{ data.dni }}
-                                    </div>
-                                </template>
-                            </Column>
                             <Column field="numeroPasaporte" header="Pasaporte" style="min-width: 3vw"
                                 class="fs-5 text-center">
                                 <template #body="{ data }" class="align-items-center">
@@ -383,15 +409,13 @@ export default {
                     </h1>
                 </div>
                 <div class="modal-body">
-                    <form @submit.prevent="handlerSubmit"  class="row g-3">
+                    <form @submit.prevent="handlerSubmit" class="row g-3">
                         <div>
                             <div class="form-group">
                                 <label for="fechaReserva">Fecha de Reserva</label>
                                 <input type="date" class="form-control" id="fechaReserva" v-model="fechaReserva" min=hoy
                                     required aria-label="Disabled input example">
-
                             </div>
-
                             <label> Debe ser cliente para poder dar de alta una reserva </label>
                             <div>
                                 <div class="form-group">
@@ -412,15 +436,12 @@ export default {
                         </div>
                     </form>
                 </div>
-
-
                 <Message severity="error" v-if="fechaReserva > new Date()">Fecha Reserva debe ser anterior a
                     hoy
                 </Message>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" @click="resetearCampos()">Cerrar</button>
-
-
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+                        @click="resetearCampos()">Cerrar</button>
                     <button type="button" data-bs-dismiss="modal" @click="guardarReserva()"
                         class="btn btn-primary">Guardar
                         Reserva</button>

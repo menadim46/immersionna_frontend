@@ -6,7 +6,7 @@ export const useClientesAPIStore = defineStore("clientesAPI", {
     state: () => ({
         clientesAPI: [],
         clientesCargadosAPI: false,
-        respuestaClienteCreado:''
+        respuestaClienteCreado: ''
 
     }),
 
@@ -33,31 +33,31 @@ export const useClientesAPIStore = defineStore("clientesAPI", {
         },
         async crearCliente(clienteNuevo) {
             try {
-              let responseCliente = await postCliente(clienteNuevo)
-      
-              if (responseCliente.status === 201) {
-                const clienteAgregado = { ...clienteNuevo }
-                this.clientesAPI.push(clienteAgregado)
-                this.clientesCargadosAPI = true
-              } else {
-                console.error('La respuesta no es 200', responseCliente)
-              }
-              this.respuestaClienteCreado = responseCliente.data
-              console.log('respuesta de clientesAPI despues de crear', this.respuestaClienteCreado)
-              return responseCliente.data
+                let responseCliente = await postCliente(clienteNuevo)
+
+                if (responseCliente.status === 201) {
+                    const clienteAgregado = { ...clienteNuevo }
+                    this.clientesAPI.push(clienteAgregado)
+                    this.clientesCargadosAPI = true
+                } else {
+                    console.error('La respuesta no es 200', responseCliente)
+                }
+                this.respuestaClienteCreado = responseCliente.data
+                console.log('respuesta de clientesAPI despues de crear', this.respuestaClienteCreado)
+                return responseCliente.data
             } catch (error) {
-              console.error('Error al crear el cliente:', error)
-              throw error;
+                console.error('Error al crear el cliente:', error)
+                throw error;
             }
-          },
-        
+        },
+
         async actualizarDatosCliente(referenciaCliente, nuevoCliente) {
-              try {
+            try {
                 const index = this.clientesAPI.findIndex(cliente => cliente._links.self.href === referenciaCliente)
                 if (index !== -1) {
                     this.clientesAPI[index] = { ...this.clientesAPI[index], ...nuevoCliente }
                     await putCliente(referenciaCliente, nuevoCliente)
-                    this.clientesCargadosAPI=true
+                    this.clientesCargadosAPI = true
                 }
             } catch (error) {
                 console.error("Error al actualizar servicio: ", error)

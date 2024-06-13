@@ -5,6 +5,7 @@
     <h1 class="fw-bold mt-3">Bienvenido a Immersionna</h1>
     <h2 class="fw-bold mt-3 mb-3">Academia de Idiomas </h2>
 <div class="container mt-5">
+    <!-- imagen proporcionada por Bing -->
     <img src="/src/assets/imagenBienvenidaImmersionna.jpg"></img>
 </div>
 </template>

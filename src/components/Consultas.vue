@@ -74,14 +74,12 @@ export default {
 </script>
 
 <template>
-
     <div class="container">
         <h1><strong>Clientes</strong></h1>
     </div>
     <div class="container">
         <h4 style="color: #003366;font-weight: 500;"><strong>{{ this.clienteSeleccionado.nombreApellidos }}</strong>
         </h4>
-
         <div class="ms-3 me-3 mt-3 mb-3 ">
             <input type="date" class="form-control" id="fechaInicio" v-model="fechaConsulta">
         </div>

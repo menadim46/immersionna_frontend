@@ -33,11 +33,9 @@ export default {
     }
   },
 
-
   components: { Servicio, DataTable, Column, Dropdown, Button, Message, Modal },
 
   computed: {
-    // ...mapState(useServiciosStore, ["usuarios", "tareas"]),
     ...mapState(useServiciosAPIStore, ["servicios", "tipos", "servicioConsultar"]),
 
     serviciosOrdenadosFechaInicio() {
@@ -86,21 +84,18 @@ export default {
   methods: {
     ...mapActions(useServiciosAPIStore, ['cargarServicios', 'cargarReservasTodosServicios',
       'cargarReservasUnServicio', 'crearNuevoServicioStore',
-      'anadirServicioStore', 'deleteServicioStore', 'guardarServicioConsultado','actualizarServicioStore']),
-
+      'anadirServicioStore', 'deleteServicioStore', 'guardarServicioConsultado', 'actualizarServicioStore']),
 
     obtenerId(url) {
       const parts = url.split('/')
       return parts[parts.length - 1]
     },
 
-
     async guardarServicio() {
       if (!this.tipoServicio || !this.descripcion || !this.fechaInicio) {
 
         return
       }
-
       const nuevoServicio = {
         tipo: this.tipoServicio,
         descripcion: this.descripcion,
@@ -120,8 +115,8 @@ export default {
         console.error('Error al añadir el servicio:', error)
       }
       this.cargarServicios()
-    }
-    ,
+    },
+
     resetearCampos() {
       this.tipoServicio = ''
       this.descripcion = ''
@@ -135,9 +130,11 @@ export default {
     cancelarServicio() {
       this.resetearCampos()
     },
+
     calcularDisponibilidad(servicio) {
       return servicio.numeroAlumnos - servicio.reservas.length
     },
+
     mostrarModalEdicion(servicio) {
       this.servicioEditar = servicio
       this.tipoServicio = servicio.tipo || ''
@@ -185,16 +182,12 @@ export default {
     },
 
     async visualizarReservas(servicio) {
-
       const servicioParaStore = { ...servicio }
       await this.guardarServicioConsultado(servicioParaStore)
       this.$router.push({ name: 'informes' })
-
     }
-
-
-
   },
+
   mounted() {
     this.cargarServicios()
     this.cargarReservasTodosServicios()

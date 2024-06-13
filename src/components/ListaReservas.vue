@@ -38,7 +38,7 @@ export default {
 
       if (this.usuarioParaFiltrar) {
         reservasFiltradas = this.reservasAPI.filter(reserva =>
-          (reserva.usuario === this.usuarioParaFiltrar || reserva.usuario === "") &&
+          (reserva.usuario === this.usuarioParaFiltrar || reserva.usuario === "" || reserva.usuario === null) &&
           new Date(reserva.servicio.fechaFin) > hoy
         )
       } else {
@@ -67,6 +67,7 @@ export default {
 
       })
     },
+
     tareasPendientes() {
       const tareasPendientes = {}
       this.reservasAPI.forEach(reserva => {
@@ -103,7 +104,10 @@ export default {
       try {
         const respuesta = await this.consultaReservaStore(reserva._links.self.href)
         const usuarioRespuesta = respuesta.usuario
-        if (usuarioRespuesta) {
+        const tareaAsignadaRespuesta = respuesta.tareaAsignada
+        const mismaTareayUsuario = (usuarioRespuesta === ("" || null)) && tareaAsignadaRespuesta === reserva.tareaAsignada
+
+        if (!mismaTareayUsuario) {
           this.errorAsignar = true
         }
         return usuarioRespuesta
@@ -113,25 +117,23 @@ export default {
       }
     },
 
-
     async asignarUsuario(reserva) {
-      if (reserva.usernameTemporal && !reserva.usuario) {
-        try {
-          const usuarioConsultado = await this.consultar(reserva)
-          this.usuarioConsultadoAntesAsignar = usuarioConsultado
-          if (usuarioConsultado === '') {
-            await this.asignarUsuarioStore(reserva._links.self.href, reserva.usernameTemporal.usuario)
-            this.errorAsignar = false
+      try {
+        const usuarioConsultado = await this.consultar(reserva)
+        console.log('usuario consultado ', usuarioConsultado)
+        this.usuarioConsultadoAntesAsignar = usuarioConsultado
+        if (usuarioConsultado === null || usuarioConsultado === "") {
+          console.log("te voy a asignar ", reserva.usernameTemporal.usuario)
+          await this.asignarUsuarioStore(reserva._links.self.href, reserva.usernameTemporal.usuario)
+          this.errorAsignar = false
 
-          }
-          reserva.usernameTemporal = ''
-        } catch (error) {
-          this.errorAsignar = true
-          console.error('Error al asignar usuario:', error, reserva.usuario)
         }
-      } else {
+        reserva.usernameTemporal = ''
+      } catch (error) {
         this.errorAsignar = true
+        console.error('Error al asignar usuario:', error, reserva.usuario)
       }
+
     },
     asignarPrimeraTarea(reserva) {
       if (!reserva.tareaAsignada) {
@@ -166,7 +168,6 @@ export default {
       return this.usuarios.some(u => u.usuario === usuarioIntroducido && usuarioIntroducido === contrasenaIntroducida)
     }
 
-
   },
   mounted() {
     this.cargarReservasAPI()
@@ -182,27 +183,27 @@ export default {
     <div class="col-5 mt-3">
       <Message v-if="showError" severity="error" text="Usuario o contraseña incorrectos.">Usuario o contraseña
         incorrectos</Message>
-        
-      </div>
-      <h4 class="mt-3"><strong>Registrese para asignarse una tarea</strong></h4>
-      <div class="input-group mt-3">
-        <font-awesome-icon :icon="['fas', 'user']" size="2xl" />
-        <input v-model="usuarioRegistrado" type="text" class="form-control ms-5" placeholder="Usuario"
-        aria-label="usuarioRegistrado">
-        <input v-model="contrasenaRegistrada" type="password" class="form-control ms-5" placeholder="Contraseña"
-        aria-label="contrasenaRegistrada">
-        <button v-if="!usuarioParaFiltrar" type="button" class="btn btn-success ms-5"
-        @click="registrarse">Registrarse</button>
-        <button v-if="usuarioParaFiltrar" type="button" class="btn btn-success ms-5" @click="salir">Cerrar Sesión</button>
-      </div>
+
     </div>
+    <h4 class="mt-3"><strong>Registrese para asignarse una tarea</strong></h4>
+    <div class="input-group mt-3">
+      <font-awesome-icon :icon="['fas', 'user']" size="2xl" />
+      <input v-model="usuarioRegistrado" type="text" class="form-control ms-5" placeholder="Usuario"
+        aria-label="usuarioRegistrado">
+      <input v-model="contrasenaRegistrada" type="password" class="form-control ms-5" placeholder="Contraseña"
+        aria-label="contrasenaRegistrada">
+      <button v-if="!usuarioParaFiltrar" type="button" class="btn btn-success ms-5"
+        @click="registrarse">Registrarse</button>
+      <button v-if="usuarioParaFiltrar" type="button" class="btn btn-success ms-5" @click="salir">Cerrar Sesión</button>
+    </div>
+  </div>
   <div>
   </div>
   <div class="container mt-3">
     <h1 class="titulo p-2 text-center"><strong>Listado de Reservas</strong></h1>
-    <Message v-if="errorAsignar" severity="error" > Parece que <strong>{{usuarioConsultadoAntesAsignar}}</strong> ha sido más rápido en asignarse la tarea  
-  </Message>
-    
+    <Message v-if="errorAsignar" severity="error"> Parece que <strong>{{ usuarioConsultadoAntesAsignar }}</strong> ha sido
+      más rápido en asignarse la tarea
+    </Message>
     <div class="container text-center">
       <div class="row justify-content-end">
         <div class="col-12">
@@ -212,7 +213,6 @@ export default {
               <Column field="id" header="Id" style="min-width: 3vw" class="fs-5">
                 <template #body="{ data }">
                   <span :class="{ 'tarea-completada': data.tareaAsignada === 'Se han realizado todas las tareas' }">
-
                     {{ obtenerId(data._links.self.href) }}
                   </span>
                 </template>
@@ -221,23 +221,19 @@ export default {
                 <template #body="{ data }">
                   <span :class="{ 'tarea-completada': data.tareaAsignada === 'Se han realizado todas las tareas' }">
                     {{ data.nombreApellidosCliente }}
-
                   </span>
                 </template>
               </Column>
               <Column field="servicio" header="Servicio" style="min-width: 3vw" class="fs-5">
                 <template #body="{ data }">
                   <span :class="{ 'tarea-completada': data.tareaAsignada === 'Se han realizado todas las tareas' }">
-
                     {{ data.servicio.fechaInicio }} - {{ data.servicio.descripcion }}
-
                   </span>
                 </template>
               </Column>
               <Column field="fechaReserva" header="Fecha Reserva" style="min-width: 3vw" class="fs-5">
                 <template #body="{ data }">
                   <span :class="{ 'tarea-completada': data.tareaAsignada === 'Se han realizado todas las tareas' }">
-
                     {{ data.fechaReserva }}
                   </span>
                 </template>
@@ -245,7 +241,6 @@ export default {
               <Column field="tareaAsignada" header="Tarea en Curso" style="min-width: 3vw" class="fs-5">
                 <template #body="{ data }">
                   <span :class="{ 'tarea-completada': data.tareaAsignada === 'Se han realizado todas las tareas' }">
-
                     <span v-if="comprobarTareasPendientes(data) !== 0">{{ comprobarTareasPendientes(data) }}/{{
                       this.tareas.length }}
                     </span> {{ asignarPrimeraTarea(data) }}
@@ -279,7 +274,6 @@ export default {
                   </div>
                 </template>
               </Column>
-
               <Column header="" style="min-width: 3vw" class="fs-5">
                 <template #body="{ data }">
                   <div v-if="data.usuario &&

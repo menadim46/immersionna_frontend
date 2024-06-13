@@ -25,7 +25,6 @@ export default {
                 b.dni - a.dni
             })
         }
-
     },
 
     methods: {
@@ -79,5 +78,3 @@ export default {
         </div>
     </div>
 </template>
-
-<style scoped></style>

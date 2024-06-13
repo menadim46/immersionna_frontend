@@ -1,5 +1,5 @@
 import { defineStore } from "pinia"
-import { getServicios, getReservasServicio, postServicioInmersion, postServicioIntercambio, deleteServicio, patchServicio, getServiciosClienteFecha,putEntidad } from "@/stores/api-service"
+import { getServicios, getReservasServicio, postServicioInmersion, postServicioIntercambio, deleteServicio, patchServicio, getServiciosClienteFecha, putEntidad } from "@/stores/api-service"
 
 
 export const useServiciosAPIStore = defineStore("serviciosAPI", {
@@ -137,10 +137,10 @@ export const useServiciosAPIStore = defineStore("serviciosAPI", {
       }
     },
 
-    async actualizarReservasServicio(href,reservaNueva){
+    async actualizarReservasServicio(href, reservaNueva) {
       console.log('anadiendo reserva y cliente')
-      await putEntidad(href,reservaNueva)
-      
+      await putEntidad(href, reservaNueva)
+
     },
 
     async guardarServicioConsultado(servicio) {

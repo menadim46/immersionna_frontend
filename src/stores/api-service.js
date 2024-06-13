@@ -7,7 +7,6 @@ const API_RESERVAS = host + "reservas"
 const API_CLIENTES = host + "clientes"
 const API_SERVICIOS_INMERSION = host + "serviciosInmersion"
 const API_SERVICIOS_INTERCAMBIO = host + "serviciosIntercambio"
-// const API_SERVICIOS_CLIENTE_FECHA= host + "clientes" + numeroCliente + "servicios-contratados?" + fecha 
 
 function llamadaAPI(method = "get", body = null, path) {
   let config = {

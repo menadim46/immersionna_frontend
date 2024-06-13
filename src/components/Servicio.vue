@@ -3,9 +3,7 @@ import NavBar from '@/components/navegacion/NavBar.vue';
 
 export default {
     props: ['servicio'],
-    // emits: ['asignar-usuario', 'completar-tarea'],
     computed: {
-
     },
     methods: {
 
@@ -13,12 +11,7 @@ export default {
             const arrayUrl = url.split("/");
             return arrayUrl[arrayUrl.length - 1]
         },
-
     },
-    mounted() {
-
-
-    }
 }
 </script>
 
@@ -43,12 +36,7 @@ export default {
             </p>
             <p id="fecha-reserva" class="text-center"> Fecha de Reserva: {{ reserva.fechaReserva }} </p>
         </li>
-     
     </div>
-
-
-
-
 
 </template>
 
