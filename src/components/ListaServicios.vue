@@ -126,6 +126,7 @@ export default {
       this.fechaFin = ''
       this.idioma = ''
       this.numeroAlumnos = '1'
+      this.servicioEditar = ''
     },
     cancelarServicio() {
       this.resetearCampos()
@@ -250,7 +251,7 @@ export default {
                     <strong>{{ calcularDisponibilidad(data) }}</strong>
                   </div>
                   <div v-else>
-                    <i class="pi pi-lock" style="font-size: 1.5em"></i>
+                    <div class="pi pi-lock" style="font-size: 1.5em"></div>
                   </div>
                 </template>
               </Column>
@@ -314,7 +315,7 @@ export default {
                     <strong>{{ calcularDisponibilidad(data) }} </strong>
                   </div>
                   <div v-else>
-                    <i class="pi pi-lock" style="font-size: 1.5em"></i>
+                    <div class="pi pi-lock" style="font-size: 1.5em"></div>
                   </div>
                 </template>
               </Column>
@@ -390,13 +391,18 @@ export default {
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <h1 class="modal-title fs-5" id="exampleModalLabel">Nuevo Servicio</h1>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <h1 v-if="!servicioEditar" class="modal-title fs-5" id="exampleModalLabel">Nuevo Servicio</h1>
+            <h1 class="modal-title fs-5" v-else-if="!servicioEditar && servicioEditar.tipoAlojamiento">
+              <strong>Servicio de Inmersión en {{ servicioEditar.descripcion }}</strong>
+            </h1>
+            <h1 class="modal-title fs-5" v-else="servicioEditar.nivelEstudios">
+              <strong>Servicio de Intercambio {{ servicioEditar.descripcion }}</strong>
+            </h1>
           </div>
           <div class="modal-body">
             <form @submit.prevent="handlerSubmit" class="row g-3">
               <div>
-                <div class="form-group">
+                <div v-if="!servicioEditar" class="form-group">
                   <label for="tipoServicio">Tipo de Servicio</label>
                   <select v-model="tipoServicio" class="form-control" @change="handleTipoServicioChange">
                     <option value="">Selecciona un tipo de servicio</option>
@@ -404,6 +410,7 @@ export default {
                     <option value="Inmersion">Inmersión</option>
                   </select>
                 </div>
+
                 <div class="form-group">
                   <label for="descripcion">Descripción</label>
                   <input type="text" v-model="descripcion" class="form-control" id="descripcion"
@@ -424,15 +431,7 @@ export default {
                   <input type="number" v-model="numeroAlumnos" class="form-control" id="numeroAlumnos"
                     placeholder="cantidad alumnos" min="2" max="30">
                 </div>
-                <div v-if="tipoServicio === 'Intercambio'" class="form-group">
-                  <label for="nivelEstudios">Nivel de Estudios</label>
-                  <select v-model="nivelEstudios" class="form-control" id="nivelEstudios">
-                    <option value="">Selecciona un nivel de estudios</option>
-                    <option value="ESO">ESO</option>
-                    <option value="Bachiller">Bachiller</option>
-                    <option value="Universitario">Universitario</option>
-                  </select>
-                </div>
+                
                 <div class="col-md-6">
                   <label for="fechaInicio" class="form-label">Fecha-Inicio</label>
                   <input type="date" class="form-control" id="fechaInicio" v-model="fechaInicio" min=hoy required>
@@ -455,11 +454,20 @@ export default {
                     <option value="Sin Manutencion">Sin manutencion</option>
                   </select>
                 </div>
+                <div v-if="tipoServicio === 'Intercambio'" class="form-group">
+                  <label for="nivelEstudios">Nivel de Estudios</label>
+                  <select v-model="nivelEstudios" class="form-control" id="nivelEstudios">
+                    <option value="">Selecciona un nivel de estudios</option>
+                    <option value="ESO">ESO</option>
+                    <option value="Bachiller">Bachiller</option>
+                    <option value="Universitario">Universitario</option>
+                  </select>
+                </div>
               </div>
             </form>
           </div>
-          <Message severity="error" v-if="!idioma">Seleccione un idioma
-          </Message>
+          <!-- <Message severity="error" v-if="!idioma">Seleccione un idioma
+          </Message> -->
           <Message severity="error" v-if="numeroAlumnos && (numeroAlumnos < 1 || numeroAlumnos > 30)">Número inválido
           </Message>
           <Message severity="error" v-if="fechaInicio && fechaInicio <= new Date()">Fecha Inicio debe ser posterior a
@@ -469,21 +477,21 @@ export default {
             Inicio
           </Message>
           <Message severity="error"
-            v-if="(!tipoServicio || !descripcion || !fechaInicio || !fechaFin || !idioma || !numeroAlumnos)">Por favor
+            v-if="((!descripcion || !fechaInicio || !fechaFin || !idioma || !numeroAlumnos) || (!tipoAlojamiento && !nivelEstudios))">Por favor
             rellena todos los campos</Message>
 
 
           <div class="modal-footer">
             <button type="button" @click="cancelarServicio()" class="btn btn-secondary"
               data-bs-dismiss="modal">Cerrar</button>
-            <button v-if="servicioEditar" type="button" data-bs-dismiss="modal" @click="actualizarServicio()"
-              class="btn btn-primary">Actualizar
+            <!-- <button v-if="!servicioEditar && (!descripcion || !fechaInicio || !fechaFin || !idioma || !numeroAlumnos)" -->
+              <button v-if="!servicioEditar && (descripcion && fechaInicio && fechaFin && idioma && numeroAlumnos)"
+            type="button" data-bs-dismiss="modal" @click="guardarServicio()" class="btn btn-primary">Guardar
               Servicio</button>
-
-
-            <button v-else="!servicioEditar" type="button" data-bs-dismiss="modal" @click="guardarServicio()"
-              class="btn btn-primary">Guardar
+            <button v-else-if="servicioEditar && descripcion && fechaInicio && fechaFin && idioma && numeroAlumnos"
+              type="button" data-bs-dismiss="modal" @click="actualizarServicio()" class="btn btn-primary">Actualizar
               Servicio</button>
+            <!-- v-if="()" -->
           </div>
         </div>
       </div>

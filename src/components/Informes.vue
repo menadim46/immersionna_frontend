@@ -38,15 +38,17 @@ export default {
         ...mapState(useClientesAPIStore, ['clientesAPI', 'clienteConsultar', 'reservas']),
 
         reservasFiltradasServicioSeleccionado() {
-            let servicioComparar = this.servicioConsultar._links.self.href;
-            servicioComparar = servicioComparar.replace('serviciosIntercambio', 'servicios')
-                .replace('serviciosInmersion', 'servicios');
-            const reservasFiltradas = this.reservasAPI.filter(reserva => {
-                const hrefReservaNormalizado = reserva.servicio._links.self.href.replace('serviciosIntercambio', 'servicios')
+            if (this.servicioConsultar) {
+                let servicioComparar = this.servicioConsultar._links.self.href;
+                servicioComparar = servicioComparar.replace('serviciosIntercambio', 'servicios')
                     .replace('serviciosInmersion', 'servicios');
-                return hrefReservaNormalizado === servicioComparar;
-            })
-            return reservasFiltradas;
+                const reservasFiltradas = this.reservasAPI.filter(reserva => {
+                    const hrefReservaNormalizado = reserva.servicio._links.self.href.replace('serviciosIntercambio', 'servicios')
+                        .replace('serviciosInmersion', 'servicios');
+                    return hrefReservaNormalizado === servicioComparar;
+                })
+                return reservasFiltradas;
+            }
         },
         reservasConfirmadasViajar() {
             const indexPreparado = this.tareas.findIndex(tarea => tarea === 'Preparado para Viajar');
@@ -126,20 +128,15 @@ export default {
             if (clientePertenece) {
                 await this.actualizarDatosCliente(clientePertenece._links.self.href, clienteComprobar)
                 this.respuestaCreacionParaCliente = clientePertenece
-                console.log('actualizo cliente con estos datos', clientePertenece)
             }
             else {
-                console.log('creo cliente', clienteComprobar)
                 this.clienteUrlEncontrada = await this.crearCliente(clienteComprobar)
-                console.log('respuesta desde componente', this.clienteUrlEncontrada)
                 this.respuestaCreacionParaCliente = this.clienteUrlEncontrada
                 await this.cargarClienteAPI()
             }
-            console.log('informes', this.respuestaCreacionParaCliente)
         },
 
         async obtenerUrlCliente(dniComprobar) {
-            console.log('dni para comprobar', dniComprobar);
             this.clienteUrlEncontrada = this.clientesAPI.find(cliente => cliente.dni === dniComprobar);
             if (!this.clienteUrlEncontrada) {
                 this.cargarClienteAPI()
@@ -152,7 +149,6 @@ export default {
                 let reservasActuales = this.servicioConsultar.reservas.length
                 if (this.servicioConsultar.disponibilidad == true || this.servicioConsultar.numeroAlumnos < reservasActuales) {
                     this.anadirReservaStore(servicio, cliente)
-                    console.log('Creada nueva reserva')
 
                 }
             } else {
@@ -184,7 +180,6 @@ export default {
                     ];
 
                     const resultados = await Promise.all(promesas)
-                    console.log('Todas las promesas completadas:', resultados)
 
                 } catch (error) {
                     console.error('Error al guardar la reserva:', error)
@@ -194,10 +189,11 @@ export default {
                         fechaReserva: this.fechaReserva,
                         cliente: this.respuestaCreacionParaCliente._links.cliente.href,
                         servicio: this.servicioConsultar._links.self.href,
-                        tareaAsignada: "Registrar cliente"
+                        tareaAsignada: "Registrar cliente",
+                        usuario:""
                     }
-                    this.cargarClienteAPI(),
-                        console.log('informes', this.respuestaCreacionParaCliente)
+                    // this.cargarClienteAPI(),
+                        // console.log('informes', this.respuestaCreacionParaCliente)
                     if (!clientePerteneceServicio) {
                         this.crearNuevaReserva(servicioConFechaReserva, this.respuestaCreacionParaCliente)
                     } else {
@@ -331,14 +327,14 @@ export default {
                                     </div>
                                 </template>
                             </Column>
-                            <Column field="numeroPasaporte" header="Pasaporte" style="min-width: 3vw"
+                            <!-- <Column field="numeroPasaporte" header="Pasaporte" style="min-width: 3vw"
                                 class="fs-5 text-center">
                                 <template #body="{ data }" class="align-items-center">
-                                    <div class="text-center" v-if="data.numeroPasaporte">
-                                        <i class="pi pi-check"></i>
+                                    <div class="text-center" v-if="!data.numeroPasaporte">
+                                        <i class="pi pi-times"></i>
                                     </div>
                                 </template>
-                            </Column>
+                            </Column> -->
                         </DataTable>
                         <h4 class="mt-3" style="color:#003366; font-weight: 600;">No Confirmados ({{
                             this.reservasNoConfirmadasViajar.length }})</h4>
@@ -373,14 +369,14 @@ export default {
                                     </div>
                                 </template>
                             </Column>
-                            <Column field="numeroPasaporte" header="Pasaporte" style="min-width: 3vw"
+                            <!-- <Column field="numeroPasaporte" header="Pasaporte" style="min-width: 3vw"
                                 class="fs-5 text-center">
                                 <template #body="{ data }" class="align-items-center">
                                     <div class="text-center" v-if="data.numeroPasaporte">
                                         <i class="pi pi-check"></i>
                                     </div>
                                 </template>
-                            </Column>
+                            </Column> -->
                         </DataTable>
                     </div>
                 </div>
@@ -472,4 +468,5 @@ ul {
 li {
     margin: 10px 0;
 }
+
 </style>

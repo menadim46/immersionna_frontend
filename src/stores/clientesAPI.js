@@ -43,7 +43,6 @@ export const useClientesAPIStore = defineStore("clientesAPI", {
                     console.error('La respuesta no es 200', responseCliente)
                 }
                 this.respuestaClienteCreado = responseCliente.data
-                console.log('respuesta de clientesAPI despues de crear', this.respuestaClienteCreado)
                 return responseCliente.data
             } catch (error) {
                 console.error('Error al crear el cliente:', error)

@@ -22,7 +22,7 @@ export default {
         ...mapState(useClientesAPIStore, ['clientesAPI', 'clientesCargadosAPI']),
         ordenarClientes() {
             return this.clientesAPI.slice().sort((a, b) => {
-                b.dni - a.dni
+                return a.nombreApellidos.localeCompare(b.nombreApellidos)
             })
         }
     },

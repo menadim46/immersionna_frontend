@@ -91,9 +91,13 @@ export default {
         </div>
     </div>
     <div>
+        <div class="text-center mt-3 mb-3" style="color:green;font-weight: 700;">
+            Seleccione un cliente <i class="pi pi-eye me-3" style="color: #003366;font-size: 1.5em"></i> y
+            fecha <i class="pi pi-calendar me-3" style="color: #003366;font-size: 1.5em"></i>desde la que desea realizar
+            la consulta</div>
         <div class="mt-5 mb-5" v-if="serviciosMostrar">
             <ul class="text-center" v-for="servicio in serviciosMostrar">
-                <ol style="color: #003366;font-weight: 600;">
+                <ol style="color: #003366;font-weight: 700;font-size: large;">
                     {{ servicio.fechaInicio }} - {{ servicio.fechaFin }} , Curso de {{ servicio.idioma }}, en {{
                         servicio.descripcion
                     }} {{ servicio.tipoAlojamiento }}
@@ -102,10 +106,6 @@ export default {
         </div>
         <div class="text-center" v-else="clienteSeleccionado && serviciosMostrar == ''"> No existen servicios para
             mostrar</div>
-        <div class="text-center mt-3 mb-3" style="color:green;font-weight: 700;">
-            Seleccione un cliente <i class="pi pi-eye me-3" style="color: #003366;font-size: 1.5em"></i> y
-            fecha <i class="pi pi-calendar me-3" style="color: #003366;font-size: 1.5em"></i>desde la que desea realizar
-            la consulta</div>
     </div>
     <div class="container">
         <DataTable :value="this.clientesAPI" resizableColumns columnResizeMode="fit" paginator :rows="50" stripedRows

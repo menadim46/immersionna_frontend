@@ -8,7 +8,7 @@ import Column from 'primevue/column'
 import Dropdown from 'primevue/dropdown'
 import Button from 'primevue/button'
 import Message from 'primevue/message'
-export default {
+export default { 
   components: { DataTable, Column, Dropdown, Button, Message },
   data() {
     return {
@@ -29,7 +29,8 @@ export default {
     ...mapState(useClientesAPIStore, ['clientesAPI', 'clientesCargadosAPI']),
 
     usuariosAsignables() {
-      let usuariosSeleccionar = [{ usuario: "" }, { usuario: this.usuarioParaFiltrar }]
+      // let usuariosSeleccionar = [{ usuario: "" }, { usuario: this.usuarioParaFiltrar }]
+      let usuariosSeleccionar = [{ usuario: this.usuarioParaFiltrar }]
       return usuariosSeleccionar
     },
     reservasFiltradas() {
@@ -120,10 +121,8 @@ export default {
     async asignarUsuario(reserva) {
       try {
         const usuarioConsultado = await this.consultar(reserva)
-        console.log('usuario consultado ', usuarioConsultado)
         this.usuarioConsultadoAntesAsignar = usuarioConsultado
         if (usuarioConsultado === null || usuarioConsultado === "") {
-          console.log("te voy a asignar ", reserva.usernameTemporal.usuario)
           await this.asignarUsuarioStore(reserva._links.self.href, reserva.usernameTemporal.usuario)
           this.errorAsignar = false
 
@@ -253,7 +252,7 @@ export default {
                     data.tareaAsignada !== 'Se han realizado todas las tareas'">
                     <div v-if="usuarioParaFiltrar" class="card flex justify-content-center">
                       <Dropdown v-model="data.usernameTemporal" :options="usuariosAsignables" checkmark
-                        :highlightOnSelect="false" optionLabel="usuario" placeholder="Elige usuario"
+                        :highlightOnSelect="false" optionLabel="usuario" 
                         class="w-full md:w-14rem">
                       </Dropdown>
                     </div>
@@ -267,7 +266,7 @@ export default {
                 <template #body="{ data }">
                   <div v-if="!data.usuario &&
                     data.tareaAsignada !== 'Se han realizado todas las tareas'">
-                    <span v-if="usuarioParaFiltrar"
+                    <span v-if="data.usernameTemporal"
                       :class="{ 'tarea-completada': data.tareaAsignada === 'Se han realizado todas las tareas' }">
                       <i class="pi pi-check-circle" style="font-size: 2rem" @click="asignarUsuario(data)"></i>
                     </span>

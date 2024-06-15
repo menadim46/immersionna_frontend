@@ -7,7 +7,7 @@ export const useReservasAPIStore = defineStore("reservasAPI", {
     reservasAPI: [],
     reservasCargadasAPI: false,
     usuarios: [{ usuario: "" }, { usuario: "Pepe" }, { usuario: "Juan" }, { usuario: "Maria" }, { usuario: "Julia" }],
-    tareas: ["Registrar cliente", "Confirmar Pago", "Confirmar Alojamiento", "Confirmar Transporte", "Preparado para Viajar",
+    tareas: ["Registrar cliente", "Confirmar Pago", "Confirmar Alojamiento", "Confirmar Transporte","Confirmar documentacion", "Preparado para Viajar",
       "Confirmar llegada al pais por anfitrión", "Confirmar salida del país por anfitrión",
       "Llegada a España", "Se han realizado todas las tareas"],
     usuarioSeleccionado: "",
@@ -128,8 +128,6 @@ export const useReservasAPIStore = defineStore("reservasAPI", {
       }
     },
     async anadirReservaStore(reservaRecibida) {
-
-      console.log('voy a pasar el post de reserva', reservaRecibida)
       try {
         const response = await postReserva(reservaRecibida)
         if (response.status === 200) {
