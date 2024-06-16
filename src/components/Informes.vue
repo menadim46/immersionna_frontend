@@ -29,7 +29,7 @@ export default {
             clienteObtenerUrl: {},
             clienteUrlEncontrada: '',
             respuestaCreacionParaCliente: '',
-            errorPertenece: false
+            errorPertenece: false,
         }
     },
     computed: {
@@ -121,6 +121,11 @@ export default {
                 this.numeroAlumnosRestantes = this.servicioConsultar.numeroAlumnos - this.reservasFiltradasServicioSeleccionado.length;
             }
         },
+        esFechaEmpezada(fecha) {
+    const hoy = new Date();
+    const fechaInicio = new Date(fecha);
+    return fechaInicio > hoy;
+  },
 
         async crearOActualizarCliente(clienteComprobar) {
             const clientePertenece = this.clientesAPI.find(cliente => cliente.dni === clienteComprobar.dni);
@@ -190,10 +195,9 @@ export default {
                         cliente: this.respuestaCreacionParaCliente._links.cliente.href,
                         servicio: this.servicioConsultar._links.self.href,
                         tareaAsignada: "Registrar cliente",
-                        usuario:""
+                        usuario: ""
                     }
-                    // this.cargarClienteAPI(),
-                        // console.log('informes', this.respuestaCreacionParaCliente)
+
                     if (!clientePerteneceServicio) {
                         this.crearNuevaReserva(servicioConFechaReserva, this.respuestaCreacionParaCliente)
                     } else {
@@ -210,6 +214,8 @@ export default {
                 }
             }
         },
+        
+    
         resetearCampos() {
             this.nombreApellidos = '',
                 this.correo = '',
@@ -218,6 +224,7 @@ export default {
                 this.dni = '',
                 this.telefono = ''
         },
+
     },
     mounted() {
         this.cargarServicios()
@@ -230,7 +237,6 @@ export default {
 
 
 <template>
-
     <div class="row mt-3 mb-3">
         <div class="col-sm-6 d-flex justify-content-end">
             <router-link to="/listaServicios">
@@ -240,8 +246,7 @@ export default {
             </router-link>
 
         </div>
-        <div v-if="this.servicioConsultar.disponibilidad == true && this.numeroAlumnosRestantes > 0
-            || this.servicioConsultar.fechaInicio > new Date()" class="col-sm-6 justify-content-center">
+        <div v-if="this.numeroAlumnosRestantes > 0  && esFechaEmpezada(servicioConsultar.fechaInicio)" class="col-sm-6 justify-content-center">
             <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#formularioReserva"
                 style="font-size: 1.5em;">
                 <div><i class="pi pi-plus-circle me-3" style="font-size: 1em;"></i> Añadir Reserva</div>
@@ -327,14 +332,7 @@ export default {
                                     </div>
                                 </template>
                             </Column>
-                            <!-- <Column field="numeroPasaporte" header="Pasaporte" style="min-width: 3vw"
-                                class="fs-5 text-center">
-                                <template #body="{ data }" class="align-items-center">
-                                    <div class="text-center" v-if="!data.numeroPasaporte">
-                                        <i class="pi pi-times"></i>
-                                    </div>
-                                </template>
-                            </Column> -->
+
                         </DataTable>
                         <h4 class="mt-3" style="color:#003366; font-weight: 600;">No Confirmados ({{
                             this.reservasNoConfirmadasViajar.length }})</h4>
@@ -369,14 +367,6 @@ export default {
                                     </div>
                                 </template>
                             </Column>
-                            <!-- <Column field="numeroPasaporte" header="Pasaporte" style="min-width: 3vw"
-                                class="fs-5 text-center">
-                                <template #body="{ data }" class="align-items-center">
-                                    <div class="text-center" v-if="data.numeroPasaporte">
-                                        <i class="pi pi-check"></i>
-                                    </div>
-                                </template>
-                            </Column> -->
                         </DataTable>
                     </div>
                 </div>
@@ -386,7 +376,6 @@ export default {
     <div v-else class="container">
         <h3>Seleccione un sevicio para mostrar sus reservas</h3>
     </div>
-
 
     <!-- MODAL RESERVAS -->
     <div class="modal fade" ref="formularioReserva" id="formularioReserva" tabindex="-1"
@@ -405,14 +394,13 @@ export default {
                     </h1>
                 </div>
                 <div class="modal-body">
-                    <form @submit.prevent="handlerSubmit" class="row g-3">
+                    <form @submit.prevent="guardarReserva" class="row g-3 needs-validation" novalidate>
                         <div>
                             <div class="form-group">
                                 <label for="fechaReserva">Fecha de Reserva</label>
                                 <input type="date" class="form-control" id="fechaReserva" v-model="fechaReserva" min=hoy
                                     required aria-label="Disabled input example">
                             </div>
-                            <label> Debe ser cliente para poder dar de alta una reserva </label>
                             <div>
                                 <div class="form-group">
                                     <label for="dni">DNI</label>
@@ -438,19 +426,14 @@ export default {
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
                         @click="resetearCampos()">Cerrar</button>
-                    <button type="button" data-bs-dismiss="modal" @click="guardarReserva()"
-                        class="btn btn-primary">Guardar
+                    <button v-if="dni && numeroPasaporte && correo && nombreApellidos && telefono && fechaReserva"
+                        type="button" data-bs-dismiss="modal" @click="guardarReserva()" class="btn btn-primary">Guardar
                         Reserva</button>
                 </div>
             </div>
         </div>
     </div>
 </template>
-
-
-
-
-
 
 <style scoped>
 .container {
@@ -468,5 +451,4 @@ ul {
 li {
     margin: 10px 0;
 }
-
 </style>

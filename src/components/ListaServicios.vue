@@ -1,6 +1,5 @@
 <script>
-// import servicios from '@/assets/servicios.json'
-// import { useServiciosStore } from '@/stores/servicios'
+
 import Servicio from '@/components/Servicio.vue'
 import { mapActions, mapState } from 'pinia'
 import { useServiciosAPIStore } from '@/stores/serviciosAPI'
@@ -135,6 +134,11 @@ export default {
     calcularDisponibilidad(servicio) {
       return servicio.numeroAlumnos - servicio.reservas.length
     },
+    esFechaAnteriorAHoy(fecha) {
+      const hoy = new Date();
+      const fechaInicio = new Date(fecha);
+      return fechaInicio < hoy;
+    },
 
     mostrarModalEdicion(servicio) {
       this.servicioEditar = servicio
@@ -244,14 +248,12 @@ export default {
               </Column>
               <Column field="plazas" header="Plazas" style="min-width: 1vw" class="fs-5">
                 <template #body="{ data }">
-                  <div v-if="new Date(data.fechaInicio) < new Date().setHours(0, 0, 0, 0)">
-                    <span style="color: green;"><strong>En curso...</strong></span>
-                  </div>
-                  <div v-else-if="calcularDisponibilidad(data) > 0" style="color: #003366;">
-                    <strong>{{ calcularDisponibilidad(data) }}</strong>
+                  <div v-if="calcularDisponibilidad(data) === 0 || esFechaAnteriorAHoy(data.fechaInicio)"
+                    style="color: #003366;">
+                    <div class="pi pi-lock" style="font-size: 1.5em"></div>
                   </div>
                   <div v-else>
-                    <div class="pi pi-lock" style="font-size: 1.5em"></div>
+                    <strong>{{ calcularDisponibilidad(data) }}</strong>
                   </div>
                 </template>
               </Column>
@@ -308,14 +310,12 @@ export default {
               </Column>
               <Column field="plazas" header="Plazas" style="min-width: 1vw" class="fs-5">
                 <template #body="{ data }">
-                  <div v-if="new Date(data.fechaInicio) < new Date().setHours(0, 0, 0, 0)">
-                    <span style="color: green;"><strong>En curso...</strong></span>
-                  </div>
-                  <div v-else-if="calcularDisponibilidad(data) > 0" style="color: #003366;">
-                    <strong>{{ calcularDisponibilidad(data) }} </strong>
+                  <div v-if="calcularDisponibilidad(data) === 0 || esFechaAnteriorAHoy(data.fechaInicio)"
+                    style="color: #003366;">
+                    <div class="pi pi-lock" style="font-size: 1.5em"></div>
                   </div>
                   <div v-else>
-                    <div class="pi pi-lock" style="font-size: 1.5em"></div>
+                    <strong>{{ calcularDisponibilidad(data) }}</strong>
                   </div>
                 </template>
               </Column>
@@ -431,7 +431,7 @@ export default {
                   <input type="number" v-model="numeroAlumnos" class="form-control" id="numeroAlumnos"
                     placeholder="cantidad alumnos" min="2" max="30">
                 </div>
-                
+
                 <div class="col-md-6">
                   <label for="fechaInicio" class="form-label">Fecha-Inicio</label>
                   <input type="date" class="form-control" id="fechaInicio" v-model="fechaInicio" min=hoy required>
@@ -477,21 +477,22 @@ export default {
             Inicio
           </Message>
           <Message severity="error"
-            v-if="((!descripcion || !fechaInicio || !fechaFin || !idioma || !numeroAlumnos) || (!tipoAlojamiento && !nivelEstudios))">Por favor
+            v-if="((!descripcion || !fechaInicio || !fechaFin || !idioma || !numeroAlumnos) || (!tipoAlojamiento && !nivelEstudios))">
+            Por favor
             rellena todos los campos</Message>
 
 
           <div class="modal-footer">
             <button type="button" @click="cancelarServicio()" class="btn btn-secondary"
               data-bs-dismiss="modal">Cerrar</button>
-            <!-- <button v-if="!servicioEditar && (!descripcion || !fechaInicio || !fechaFin || !idioma || !numeroAlumnos)" -->
-              <button v-if="!servicioEditar && (descripcion && fechaInicio && fechaFin && idioma && numeroAlumnos)"
-            type="button" data-bs-dismiss="modal" @click="guardarServicio()" class="btn btn-primary">Guardar
+            <button
+              v-if="!servicioEditar && descripcion && fechaInicio && fechaFin && idioma && numeroAlumnos && (nivelEstudios || tipoAlojamiento)"
+              type="button" data-bs-dismiss="modal" @click="guardarServicio()" class="btn btn-primary">Guardar
               Servicio</button>
-            <button v-else-if="servicioEditar && descripcion && fechaInicio && fechaFin && idioma && numeroAlumnos"
+            <button
+              v-else-if="servicioEditar && descripcion && fechaInicio && fechaFin && idioma && numeroAlumnos && (nivelEstudios || tipoAlojamiento)"
               type="button" data-bs-dismiss="modal" @click="actualizarServicio()" class="btn btn-primary">Actualizar
               Servicio</button>
-            <!-- v-if="()" -->
           </div>
         </div>
       </div>

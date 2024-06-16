@@ -58,7 +58,7 @@ export default {
                         </Column>
                         <Column field="correo" header="Correo" style="min-width: 3vw" class="fs-5">
                             <template #body="{ data }">
-                                {{ data.correo }}
+                                <a :href="'mailto:' + data.correo">{{ data.correo }}</a>
                             </template>
                         </Column>
 

@@ -134,7 +134,7 @@ export const useReservasAPIStore = defineStore("reservasAPI", {
           this.reservasAPI.unshift(response.data)
         }
       } catch {
-        console.error("Error:", error)
+        console.error("Error anadir reserva")
       }
     }
 

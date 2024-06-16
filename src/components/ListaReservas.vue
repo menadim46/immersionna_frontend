@@ -8,7 +8,7 @@ import Column from 'primevue/column'
 import Dropdown from 'primevue/dropdown'
 import Button from 'primevue/button'
 import Message from 'primevue/message'
-export default { 
+export default {
   components: { DataTable, Column, Dropdown, Button, Message },
   data() {
     return {
@@ -29,7 +29,6 @@ export default {
     ...mapState(useClientesAPIStore, ['clientesAPI', 'clientesCargadosAPI']),
 
     usuariosAsignables() {
-      // let usuariosSeleccionar = [{ usuario: "" }, { usuario: this.usuarioParaFiltrar }]
       let usuariosSeleccionar = [{ usuario: this.usuarioParaFiltrar }]
       return usuariosSeleccionar
     },
@@ -130,6 +129,7 @@ export default {
         reserva.usernameTemporal = ''
       } catch (error) {
         this.errorAsignar = true
+        this.cargarReservasAPI()
         console.error('Error al asignar usuario:', error, reserva.usuario)
       }
 
